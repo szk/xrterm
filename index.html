@@ -1,0 +1,133 @@
+<!doctype html>
+<meta charset='utf-8'>
+<title>aframe-xterm-component</title>
+
+<link rel="stylesheet" href="dist/lib/xterm/xterm.css" />
+<script type="text/javascript" src="dist/lib/xterm/xterm.js"></script>
+<script type="text/javascript" src="dist/lib/aframe/aframe.min.js"></script>
+<script type="text/javascript" src="dist/lib/threejs/LegacyJSONLoader.js"></script>
+<script type="text/javascript" src="dist/lib/aframe/aabb-collider.js"></script>
+<script type="text/javascript" src="dist/lib/aframe/grab.js"></script>
+<script type="text/javascript" src="dist/lib/aframe/ground.js"></script>
+<script type="text/javascript" src="dist/lib/aframe/aframe-event-set-component.min.js"></script>
+<script type="text/javascript" src="dist/lib/aframe-xterm-component/aframe-xterm-component.js"></script>
+
+
+<script type="text/javascript" src="dist/shaders/skyGradient.js"></script>
+
+<script type="text/javascript">
+
+ AFRAME.registerComponent('xterm-example', {
+   dependencies: ['xterm'],
+   init: function() {
+     const message = 'Initialized\r\n'
+     const xterm = this.el.components['xterm']
+
+     xterm.write(message)
+
+     const socket = new WebSocket('ws://localhost:8080/')
+
+     // Listen on data, write it to the terminal
+     socket.onmessage = ({data}) => {
+       xterm.write(data)
+     }
+
+     socket.onclose = () => {
+       xterm.write('\r\nConnection closed.\r\n')
+     }
+
+     // Listen on user input, send it to the connection
+     this.el.addEventListener('xterm-data', ({detail}) => {
+       socket.send(detail)
+     })
+   }
+ })
+</script>
+<a-scene cursor="rayOrigin: mouse" fog="color: #bc483e; near: 0; far: 65;">
+
+  <a-curvedimage
+    class="terminal"
+    xterm-example
+    theta-length="60"
+    radius="6"
+    height="4"
+    rotation="0 150 0"
+    position="5 2 3"
+    mixin="term"
+  ></a-curvedimage>
+
+  <a-curvedimage
+    class="terminal"
+    xterm-example
+    theta-length="60"
+    radius="6"
+    height="4"
+    rotation="0 150 0"
+    position="-5 2 3s"
+    mixin="term" 
+  ></a-curvedimage>
+
+
+
+  <!--   Cube selection -->
+  <a-assets>
+    <a-mixin id="cube"
+             event-set__grab="material.color: #FFEF4F"
+             event-set__grabend="material.color: #F2E646"
+             event-set__hit="material.color: #F2E646"
+             event-set__hitend="material.color: #EF2D5E"
+             event-set__mousedown="material.color: #FFEF4F"
+             event-set__mouseenter="material.color: #F2E646"
+             event-set__mouseleave="material.color: #EF2D5E"
+             event-set__mouseup="material.color: #F2E646"
+             geometry="primitive: box; height: 0.30; width: 0.30; depth: 0.30"
+             material="color: #EF2D5E;"></a-mixin>
+    <a-mixin id="term"
+             event-set__grab="material.color: #FFEF4F"
+             event-set__grabend="material.color: #F2E646"
+             event-set__hit="material.color: #F2E646"
+             event-set__hitend="material.color: #EF2D5E"
+             event-set__mousedown="material.color: #FFEF4F"
+             event-set__mouseenter="material.color: #F2E646"
+             event-set__mouseleave="material.color: #EF2D5E"
+             event-set__mouseup="material.color: #F2E646"
+             material="color: #EF2D5E;"></a-mixin>
+  </a-assets>
+
+  <!-- A-Frame cubes -->
+  <a-entity position="0 0 -0.5">
+    <a-entity class="cube" mixin="cube" position="0.30 1.65 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0 1.95 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.30 1.65 0"></a-entity>
+
+    <a-entity class="cube" mixin="cube" position="0.60 1.35 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0.60 1.05 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0.60 0.75 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0.60 0.45 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0.60 0.15 0"></a-entity>
+
+    <a-entity class="cube" mixin="cube" position="0.30 0.75 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="0 0.75 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.30 0.75 0"></a-entity>
+
+    <a-entity class="cube" mixin="cube" position="-0.60 1.35 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.60 1.05 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.60 0.75 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.60 0.45 0"></a-entity>
+    <a-entity class="cube" mixin="cube" position="-0.60 0.15 0"></a-entity>
+
+    <!-- Environment -->
+    <a-entity id="sky"
+              geometry="primitive: sphere; radius: 65;"
+              material="shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"></a-entity>
+    <a-entity ground>dist/data/ground.json</a-entity>
+    <a-entity light="type: point; color: #f4f4f4; intensity: 0.2; distance: 0" position="8 10 18"></a-entity>
+    <a-entity light="type: point; color: #f4f4f4; intensity: 0.6; distance: 0" position="-8 10 -18"></a-entity>
+    <a-entity light="type: ambient; color: #f4f4f4; intensity: 0.4;" position="-8 10 -18"></a-entity>
+  </a-entity>
+  <!-- Hands -->
+  <a-entity hand-controls="left" aabb-collider="objects: .cube .terminal;" grab></a-entity>
+  <a-entity hand-controls="right" aabb-collider="objects: .cube .terminal;" grab></a-entity>
+  <a-entity position="0 1.6 2" camera look-controls wasd-controls></a-entity>
+</a-scene>
+

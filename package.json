@@ -1,0 +1,33 @@
+{
+  "name": "xrterm",
+  "version": "0.0.1",
+  "description": "Terminal Emulator for xR environment",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szk/xrterm.git"
+  },
+  "keywords": [
+    "aframe",
+    "vr",
+    "terminal",
+    "xterm",
+    "xrterm"
+  ],
+  "author": "szk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/szk/xrterm/issues"
+  },
+  "homepage": "https://xrterm.com",
+  "dependencies": {
+    "xterm": "^3.14.2"
+  },
+  "devDependencies": {
+    "node-pty": "^0.8.1",
+    "ws": "^6.2.1"
+  }
+}
