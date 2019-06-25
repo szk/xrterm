@@ -2,18 +2,17 @@
 <meta charset='utf-8'>
 <title>aframe-xterm-component</title>
 
+<!-- Essential -->
 <link rel="stylesheet" href="dist/lib/xterm/xterm.css" />
 <script type="text/javascript" src="dist/lib/xterm/xterm.js"></script>
 <script type="text/javascript" src="dist/lib/aframe/aframe.min.js"></script>
-<script type="text/javascript" src="dist/lib/threejs/LegacyJSONLoader.js"></script>
+
+<!-- Optional -->
+<script type="text/javascript" src="dist/shaders/skyGradient.js"></script>
 <script type="text/javascript" src="dist/lib/aframe/aabb-collider.js"></script>
 <script type="text/javascript" src="dist/lib/aframe/grab.js"></script>
-<script type="text/javascript" src="dist/lib/aframe/ground.js"></script>
 <script type="text/javascript" src="dist/lib/aframe/aframe-event-set-component.min.js"></script>
 <script type="text/javascript" src="dist/lib/aframe-xterm-component/aframe-xterm-component.js"></script>
-
-
-<script type="text/javascript" src="dist/shaders/skyGradient.js"></script>
 
 <script type="text/javascript">
 
@@ -64,7 +63,7 @@
     height="4"
     rotation="0 150 0"
     position="-5 2 3s"
-    mixin="term" 
+    mixin="term"
   ></a-curvedimage>
 
 
@@ -120,7 +119,7 @@
     <a-entity id="sky"
               geometry="primitive: sphere; radius: 65;"
               material="shader: skyGradient; colorTop: #353449; colorBottom: #BC483E; side: back"></a-entity>
-    <a-entity ground>dist/data/ground.json</a-entity>
+    <!-- <a-entity ground>dist/data/ground.json</a-entity> -->
     <a-entity light="type: point; color: #f4f4f4; intensity: 0.2; distance: 0" position="8 10 18"></a-entity>
     <a-entity light="type: point; color: #f4f4f4; intensity: 0.6; distance: 0" position="-8 10 -18"></a-entity>
     <a-entity light="type: ambient; color: #f4f4f4; intensity: 0.4;" position="-8 10 -18"></a-entity>
