@@ -16,33 +16,12 @@
     <script type="text/javascript" src="dist/lib/aframe/aframe-event-set-component.min.js"></script>
     <script type="text/javascript" src="dist/lib/aframe-xterm-component/aframe-xterm-component.js"></script>
     <script type="text/javascript" src="dist/lib/aframe-gui/aframe-gui.min.js"></script>
+    <script type="text/javascript" src="dist/lib/aframe-html-shader/aframe-html-shader.min.js"></script>
+
+    <!-- Main -->
+    <script type="text/javascript" src="src/xrterm.js"></script>
     <script type="text/javascript">
-
-     AFRAME.registerComponent('xterm-example', {
-       dependencies: ['xterm'],
-       init: function() {
-         const message = 'Initialized\r\n'
-         const xterm = this.el.components['xterm']
-
-         xterm.write(message)
-
-         const socket = new WebSocket('ws://localhost:8080/')
-
-         // Listen on data, write it to the terminal
-         socket.onmessage = ({data}) => {
-           xterm.write(data)
-         }
-
-         socket.onclose = () => {
-           xterm.write('\r\nConnection closed.\r\n')
-         }
-
-         // Listen on user input, send it to the connection
-         this.el.addEventListener('xterm-data', ({detail}) => {
-           socket.send(detail)
-         })
-       }
-     })
+     init();
     </script>
   </head>
   <body>
@@ -51,6 +30,7 @@
       <a-curvedimage
         class="terminal"
         xterm-example
+        xterm="theme_background: white; theme_foreground: black; rows: 40; cols: 138;"
         theta-length="60"
         radius="6"
         height="4"
@@ -59,11 +39,11 @@
         mixin="term"
       ></a-curvedimage>
 
-        <!-- rotation="0 150 0" -->
-
       <a-curvedimage
         class="terminal"
         xterm-example
+        xterm="theme_background: white;
+               theme_foreground: black;"
         theta-length="60"
         radius="6"
         height="4"
@@ -71,8 +51,6 @@
         position="0 4 2"
         mixin="term"
       ></a-curvedimage>
-
-
 
       <!--   Cube selection -->
       <a-assets>
@@ -122,6 +100,9 @@
         <a-entity class="cube" mixin="cube" position="-0.60 0.45 0"></a-entity>
         <a-entity class="cube" mixin="cube" position="-0.60 0.15 0"></a-entity>
 
+        <!-- html browser (not web (yet))-->
+        <a-entity geometry="primitive: plane" material="shader: html; target: #htmlElement"></a-entity>
+
         <!-- Environment -->
         <a-entity id="sky"
                   geometry="primitive: sphere; radius: 65;"
@@ -132,10 +113,13 @@
         <a-entity light="type: ambient; color: #f4f4f4; intensity: 0.4;" position="-8 10 -18"></a-entity>
       </a-entity>
       <!-- Hands -->
-      <a-entity laser-controls raycaster="objects: .terminal" hand-controls="left" aabb-collider="objects: .cube; " grab></a-entity>
-      <a-entity laser-controls raycaster="objects: .terminal" hand-controls="right" aabb-collider="objects: .cube; " grab></a-entity>
+      <a-entity laser-controls raycaster="objects: .terminal" hand-controls="left" aabb-collider="objects: .cube;" grab></a-entity>
+      <a-entity laser-controls raycaster="objects: .terminal" hand-controls="right" aabb-collider="objects: .cube;" grab></a-entity>
       <a-entity position="0 1.6 2" camera look-controls></a-entity>
     </a-scene>
+    <div style="width: 100%; height: 100%; position: fixed; left: 0; top: 0; z-index: -1; overflow: hidden">
+      <div id="htmlElement" style="background: #F8F8F8; color: #333; font-size: 48px">Hello, HTML!</div>
+    </div>
 
   </body>
 </html>
