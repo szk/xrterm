@@ -8,7 +8,7 @@ const path = require('path');
 
 const cm = require('../common');
 
-const hoge = 8023;
+const svr_port = 8023;
 
 const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
@@ -43,5 +43,5 @@ wss.on('connection', (connection) => {
   });
 });
 
-server.listen(hoge);
-console.log("Server running on port " + String(hoge));
+server.listen(svr_port);
+console.log("Server running on port " + String(svr_port));
