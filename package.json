@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "cd local_modules && (cd node-pty && npm install) && (cd xterm && npm install)",
+    "preinstall": "cd local_modules && (cd node-pty && npm install)",
     "server": "nodemon ./src/server/server.js",
     "client": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 8080",
     "start": "concurrently --kill-others \"npm run server\" \"npm run client\""
@@ -46,8 +46,7 @@
     "webpack-dev-server": "^3.8.0",
     "webpack-glsl-loader": "^1.0.1",
     "webpack-sources": "1.0.1",
-    "ws": "^6.2.1",
-    "xterm": "file:local_modules/xterm"
+    "ws": "^6.2.1"
   },
   "devDependencies": {}
 }
