@@ -3,7 +3,7 @@ const fs = require('fs');
 const https = require('http');
 const WebSocket = require('ws');
 const os = require('os');
-const pty = require('local-node-pty');
+const pty = require('node-pty');
 const path = require('path');
 
 const cm = require('../common');

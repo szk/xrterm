@@ -1,6 +1,10 @@
 "use strict";
+
 function init()
 {
+  let tty = new XRTty();
+  tty.register();
+
   AFRAME.registerComponent('xterm-example', {
     dependencies: ['xterm'],
     init: function() {

@@ -5,9 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "cd local_modules && (cd node-pty && npm install) && (cd xterm && npm install)",
     "server": "nodemon ./src/server/server.js",
     "client": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 8080",
-    "start": "npm run server & npm run client"
+    "start": "concurrently --kill-others \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,9 @@
   "keywords": [
     "aframe",
     "vr",
+    "xr",
     "terminal",
+    "commandline",
     "xterm",
     "xrterm"
   ],
@@ -32,19 +35,19 @@
     "aframe-super-hot-loader": "^1.6.0",
     "babel-loader": "^8.0.6",
     "babel-minify-webpack-plugin": "^0.3.1",
+    "concurrently": "^4.1.2",
     "diff-dom": "^4.1.3",
     "html-require-loader": "^1.0.1",
-    "local-node-pty": "file:local_modules/node-pty",
+    "node-pty": "file:local_modules/node-pty",
     "nodemon": "^1.19.1",
     "super-nunjucks-loader": "^2.0.0",
     "webpack": "^4.29.5",
     "webpack-cli": "3.2.3",
-    "webpack-dev-server": "^3.2.0",
+    "webpack-dev-server": "^3.8.0",
     "webpack-glsl-loader": "^1.0.1",
     "webpack-sources": "1.0.1",
-    "xterm": "^3.14.2"
+    "ws": "^6.2.1",
+    "xterm": "file:local_modules/xterm"
   },
-  "devDependencies": {
-    "ws": "^6.2.1"
-  }
+  "devDependencies": {}
 }
