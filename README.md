@@ -1,6 +1,6 @@
 # xrterm
 Terminal Emulator for xR environment.
-**IMPORTANT: Early version, this is not playable as so much **
+**IMPORTANT: Early version, this is not playable so much **
 
 ## Quick instruction
 ### Starting

@@ -15,11 +15,16 @@
 
     <!-- Main -->
     <script type="text/javascript" src="src/common.js"></script>
+    <script type="text/javascript" src="src/client/XRSession.js"></script>
     <script type="text/javascript" src="src/client/XRInput.js"></script>
+    <script type="text/javascript" src="src/client/XRTheme.js"></script>
     <script type="text/javascript" src="src/client/XRTty.js"></script>
+    <script type="text/javascript" src="src/client/XRBaseTerm.js"></script>
+    <script type="text/javascript" src="src/client/XRDXTerm.js"></script>
     <script type="text/javascript" src="src/client/xrterm.js"></script>
     <script type="text/javascript">
-     init();
+     let xrterm = new XRTERM();
+     xrterm.init();
     </script>
 
   </head>

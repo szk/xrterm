@@ -4,19 +4,44 @@
  */
 "use strict";
 
-class XRTty
+class XRDXTerm
 {
-  constructor (session_)
+  constructor ()
   {
-    this.session = session_;
-    console.log(this.session + 'bogeboge');
   }
 
   register ()
   {
-    self = this; // FIXME
+    AFRAME.registerComponent('term-dx', {
+      dependencies: ['xrtty'],
+      init: function() {
+        const message = 'Initialized\r\n';
+        const tty_base = this.el.components['xrtty'];
 
-    AFRAME.registerComponent('xrtty', {
+        tty_base.write(message);
+
+        const socket = new WebSocket('ws://localhost:' + String(CM.COMM_PORT)+ '/');
+
+        // Listen on data, write it to the terminal
+        socket.onmessage = ({data}) => {
+          tty_base.write(data);
+        };
+
+        socket.onclose = () => {
+          tty_base.write('\r\nConnection closed.\r\n');
+        };
+
+        // Listen on user input, send it to the connection
+        this.el.addEventListener('xrtty-data', ({detail}) => {
+          socket.send(detail);
+        });
+      }
+    });
+  }
+}
+
+/*
+    AFRAME.registerComponent('term-dx', {
       schema: Object.assign({
         cols: {
           type: 'number',
@@ -26,7 +51,7 @@ class XRTty
           type: 'number',
           default: 25
         },
-      }, TERMINAL_THEME),
+      }, this.TERMINAL_THEME),
 
       write: function (message_) {
         // if (message_.length != 1)
@@ -72,8 +97,9 @@ class XRTty
         term.open(terminalElement);
 
         this.canvas = terminalElement.querySelector('.xterm-text-layer');
-        this.canvas.id = self.session.get_term_id();
+        this.canvas.id = 'terminal-' + (this.terminalInstance++);
         this.canvasContext = this.canvas.getContext('2d');
+
         this.cursorCanvas = terminalElement.querySelector('.xterm-cursor-layer');
 
         this.el.setAttribute('material', 'transparent', true);
@@ -91,4 +117,47 @@ class XRTty
       }
     });
   }
-}
+  }
+
+  formouseoperator()
+  {
+    AFRAME.registerComponent('drag-rotate-component',{
+      schema : { speed : {default:1}},
+      init : function(){
+        this.ifMouseDown = false;
+        this.x_cord = 0;
+        this.y_cord = 0;
+        document.addEventListener('mousedown',this.OnDocumentMouseDown.bind(this));
+        document.addEventListener('mouseup',this.OnDocumentMouseUp.bind(this));
+        document.addEventListener('mousemove',this.OnDocumentMouseMove.bind(this));
+      },
+      OnDocumentMouseDown : function(event){
+        this.ifMouseDown = true;
+        this.x_cord = event.clientX;
+        this.y_cord = event.clientY;
+      },
+      OnDocumentMouseUp : function(){
+        this.ifMouseDown = false;
+      },
+      OnDocumentMouseMove : function(event)
+      {
+        if(this.ifMouseDown)
+        {
+          var temp_x = event.clientX-this.x_cord;
+          var temp_y = event.clientY-this.y_cord;
+          if(Math.abs(temp_y)<Math.abs(temp_x))
+          {
+            this.el.object3D.rotateY(temp_x*this.data.speed/1000);
+          }
+          else
+          {
+            this.el.object3D.rotateX(temp_y*this.data.speed/1000);
+          }
+          this.x_cord = event.clientX;
+          this.y_cord = event.clientY;
+        }
+      }
+    });
+  }
+  
+*/
