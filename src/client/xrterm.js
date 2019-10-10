@@ -9,6 +9,10 @@ class XRTERM
 
   init()
   {
+    let ws = new XRWorkspace();
+    ws.register();
+    // let placement = new XRPlacement();
+    // placement.register();
     let xrtty = new XRTty(this.session);
     xrtty.register();
     let base_term = new XRBaseTerm();

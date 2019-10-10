@@ -1,25 +1,30 @@
-<a-scene environment="preset: goldmine; seed: 123;">
-  <require path="templates/assets.html"></require>
+<a-scene environment="preset: forest; seed: 64;">
   <a-entity raycaster="objects: .terminal" cursor="rayOrigin: mouse"></a-entity>
 
-  <a-curvedimage
-    term-dx
-    class="terminal"
-    theta-length="60"
-    radius="6"
-    height="4"
-    rotation="0 150 0"
-    position="10 4 2"
-  ></a-curvedimage>
-  <a-curvedimage
-    term-base
-    class="terminal"
-    theta-length="60"
-    radius="6"
-    height="4"
-    rotation="0 150 0"
-    position="0 4 2"
-  ></a-curvedimage>
+  <a-entity workspace placement="rayOrigin:mouse"
+            geometry="primitive: box" material="color: #4CC3D9" position="-1 0.5 -3" rotation="0 45 0" shadow>
+    <a-curvedimage
+      term-dx
+      class="terminal"
+      theta-length="60"
+      radius="6"
+      height="4"
+      rotation="0 150 0"
+      position="10 4 2"
+    ></a-curvedimage>
+    <a-curvedimage
+      term-base
+      class="terminal"
+      theta-length="60"
+      radius="6"
+      height="4"
+      rotation="0 150 0"
+      position="0 4 2"
+    ></a-curvedimage>
+    <a-entity geometry="primitive: box" material="color:yellow" position="1 0 -1"/>
+  </a-entity>
+
+
 
   <!-- Box. -->
   <!-- <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-1 0.5 -3" rotation="0 45 0" shadow></a-entity> -->
