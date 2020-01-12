@@ -44,8 +44,26 @@ AFRAME.registerComponent('placement', {
   init: function () {
     var self = this;
 
+    /// indicator /
+    var scene_el = document.querySelector('a-scene');
+    this.dest_indicator = document.createElement('a-triangle');
+    this.dest_indicator.setAttribute('color', '#CCC');
+    this.dest_indicator.setAttribute('vertex-c', '1 -1 0');
+
+    // this.intersect_line = null;
+    this.intersect_mesh = null;
+		var geometry = new THREE.BufferGeometry();
+		geometry.addAttribute('position',
+                          new THREE.BufferAttribute( new Float32Array( 4 * 3 ), 3 ) );
+		var material = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true } );
+    this.intersect_line = new THREE.Line( geometry, material );
+
+    scene_el.appendChild(this.dest_indicator);
+
+    /// / indicator
+
     this.cursorDownEl = null;
-    this.intersectedEl = null;
+    this.intersected_el = null;
     this.canvasBounds = document.body.getBoundingClientRect();
     this.isCursorDown = false;
 
@@ -70,29 +88,22 @@ AFRAME.registerComponent('placement', {
     this.updateMouseEventListeners();
   },
 
-  play: function () {
-    this.addEventListeners();
-  },
-
-  pause: function () {
-    this.removeEventListeners();
-  },
-
+  play: function () { this.addEventListeners(); },
+  pause: function () { this.removeEventListeners(); },
   remove: function () {
     var el = this.el;
     el.removeState(STATES.HOVERING);
-    if (this.intersectedEl) { this.intersectedEl.removeState(STATES.HOVERED); }
+    if (this.intersected_el) { this.intersected_el.removeState(STATES.HOVERED); }
     this.removeEventListeners();
   },
 
   addEventListeners: function () {
-    var canvas;
-    var data = this.data;
-    var el = this.el;
-    var self = this;
+    let data = this.data;
+    let el = this.el;
+    let self = this;
 
     function addCanvasListeners () {
-      canvas = el.sceneEl.canvas;
+      let canvas = el.sceneEl.canvas;
       if (data.downEvents.length || data.upEvents.length) { return; }
       CANVAS_EVENTS.DOWN.forEach(function (downEvent) {
         canvas.addEventListener(downEvent, self.onCursorDown);
@@ -102,12 +113,8 @@ AFRAME.registerComponent('placement', {
       });
     }
 
-    canvas = el.sceneEl.canvas;
-    if (canvas) {
-      addCanvasListeners();
-    } else {
-      el.sceneEl.addEventListener('render-target-loaded', addCanvasListeners);
-    }
+    if (el.sceneEl.canvas) { addCanvasListeners(); }
+    else { el.sceneEl.addEventListener('render-target-loaded', addCanvasListeners); }
 
     data.downEvents.forEach(function (downEvent) { el.addEventListener(downEvent, self.onCursorDown); });
     data.upEvents.forEach(function (upEvent) { el.addEventListener(upEvent, self.onCursorUp); });
@@ -122,12 +129,10 @@ AFRAME.registerComponent('placement', {
   },
 
   removeEventListeners: function () {
-    var canvas;
-    var data = this.data;
-    var el = this.el;
-    var self = this;
-
-    canvas = el.sceneEl.canvas;
+    let data = this.data;
+    let el = this.el;
+    let self = this;
+    let canvas = el.sceneEl.canvas;
     if (canvas && !data.downEvents.length && !data.upEvents.length)
     {
       CANVAS_EVENTS.DOWN.forEach(function (downEvent) { canvas.removeEventListener(downEvent, self.onCursorDown); });
@@ -148,10 +153,8 @@ AFRAME.registerComponent('placement', {
   },
 
   updateMouseEventListeners: function () {
-    var canvas;
-    var el = this.el;
-
-    canvas = el.sceneEl.canvas;
+    let el = this.el;
+    let canvas = el.sceneEl.canvas;
     canvas.removeEventListener('mousemove', this.onMouseMove);
     canvas.removeEventListener('touchmove', this.onMouseMove);
     el.setAttribute('raycaster', 'useWorldCoordinates', false);
@@ -163,57 +166,53 @@ AFRAME.registerComponent('placement', {
   },
 
   onMouseMove: (function () {
-    var direction = new THREE.Vector3();
-    var mouse = new THREE.Vector2();
-    var origin = new THREE.Vector3();
-    var rayCasterConfig = {origin: origin, direction: direction};
+    let direction = new THREE.Vector3();
+    let mouse = new THREE.Vector2();
+    let origin = new THREE.Vector3();
+    let rayCasterConfig = {origin: origin, direction: direction};
 
-    return function (evt) {
-      var bounds = this.canvasBounds;
-      var camera = this.el.sceneEl.camera;
-      var left;
-      var point;
-      var top;
-
+    return function (ev_) {
+      let bounds = this.canvasBounds;
+      let camera = this.el.sceneEl.camera;
+      let point;
       camera.parent.updateMatrixWorld();
 
       // Calculate mouse position based on the canvas element
-      if (evt.type === 'touchmove' || evt.type === 'touchstart') {
+      if (ev_.type === 'touchmove' || ev_.type === 'touchstart')
+      {
         // Track the first touch for simplicity.
-        point = evt.touches.item(0);
-      } else {
-        point = evt;
+        point = ev_.touches.item(0);
       }
+      else { point = ev_; }
 
-      left = point.clientX - bounds.left;
-      top = point.clientY - bounds.top;
+      let left = point.clientX - bounds.left;
+      let top = point.clientY - bounds.top;
       mouse.x = (left / bounds.width) * 2 - 1;
       mouse.y = -(top / bounds.height) * 2 + 1;
 
       origin.setFromMatrixPosition(camera.matrixWorld);
       direction.set(mouse.x, mouse.y, 0.5).unproject(camera).sub(origin).normalize();
       this.el.setAttribute('raycaster', rayCasterConfig);
-      if (evt.type === 'touchmove') { evt.preventDefault(); }
+      if (ev_.type === 'touchmove') { ev_.preventDefault(); }
     };
   })(),
 
   /**
    * Trigger mousedown and keep track of the mousedowned entity.
    */
-  onCursorDown: function (evt) {
+  onCursorDown: function (ev_) {
     this.isCursorDown = true;
     // Raycast again for touch.
-    if (this.data.rayOrigin === 'mouse' && evt.type === 'touchstart')
+    if (this.data.rayOrigin === 'mouse' && ev_.type === 'touchstart')
     {
-      this.onMouseMove(evt);
+      console.log('hoge');
+      this.onMouseMove(ev_);
       this.el.components.raycaster.checkIntersections();
-      evt.preventDefault();
+      ev_.preventDefault();
     }
 
     this.twoWayEmit(EVENTS.MOUSEDOWN);
-    this.cursorDownEl = this.intersectedEl;
-
-    console.log('mousedown');
+    this.cursorDownEl = this.intersected_el;
   },
 
   /**
@@ -222,98 +221,92 @@ AFRAME.registerComponent('placement', {
    * - Currently-intersected entity is the same as the one when mousedown was triggered,
    *   in case user mousedowned one entity, dragged to another, and mouseupped.
    */
-  onCursorUp: function (evt)
+  onCursorUp: function (ev_)
   {
     if (!this.isCursorDown) { return; }
 
     this.isCursorDown = false;
 
-    var data = this.data;
+    let data = this.data;
     this.twoWayEmit(EVENTS.MOUSEUP);
 
     // If intersected entity has changed since the cursorDown, still emit mouseUp on the
     // previously cursorUp entity.
-    if (this.cursorDownEl && this.cursorDownEl !== this.intersectedEl)
+    if (this.cursorDownEl && this.cursorDownEl !== this.intersected_el)
     {
       this.intersectedEventDetail.intersection = null;
       this.cursorDownEl.emit(EVENTS.MOUSEUP, this.intersectedEventDetail);
     }
 
     if ((data.rayOrigin === 'mouse') &&
-        this.intersectedEl && this.cursorDownEl === this.intersectedEl)
+        this.intersected_el && this.cursorDownEl === this.intersected_el)
     {
       this.twoWayEmit(EVENTS.CLICK);
     }
 
     this.cursorDownEl = null;
-    if (evt.type === 'touchend') { evt.preventDefault(); }
+    if (ev_.type === 'touchend') { ev_.preventDefault(); }
   },
 
   /**
    * Handle intersection.
    */
-  onIntersection: function (evt) {
-    var currentIntersection;
-    var cursorEl = this.el;
-    var index;
-    var intersectedEl;
-    var intersection;
-
+  onIntersection: function (ev_) {
     // Select closest object, excluding the cursor.
-    index = evt.detail.els[0] === cursorEl ? 1 : 0;
-    intersection = evt.detail.intersections[index];
-    intersectedEl = evt.detail.els[index];
+    let index = ev_.detail.els[0] === this.el ? 1 : 0;
+    let intersection = ev_.detail.intersections[index];
+    let intersected_el = ev_.detail.els[index];
 
     // If cursor is the only intersected object, ignore the event.
-    if (!intersectedEl) { return; }
+    if (!intersected_el) { return; }
 
     // Already intersecting this entity.
-    if (this.intersectedEl === intersectedEl) { return; }
+    // if (this.intersected_el === intersected_el) { return; }
 
     // Ignore events further away than active intersection.
-    if (this.intersectedEl) {
-      currentIntersection = this.el.components.raycaster.getIntersection(this.intersectedEl);
-      if (currentIntersection && currentIntersection.distance <= intersection.distance) { return; }
+    if (this.intersected_el) {
+      let current_intersection = this.el.components.raycaster.getIntersection(this.intersected_el);
+      if (current_intersection && current_intersection.distance <= intersection.distance)
+      { return; }
     }
 
     // Unset current intersection.
     this.clearCurrentIntersection(true);
 
-    this.setIntersection(intersectedEl, intersection);
+    this.setIntersection(intersected_el, intersection);
   },
 
   /**
    * Handle intersection cleared.
    */
-  onIntersectionCleared: function (evt) {
-    var clearedEls = evt.detail.clearedEls;
+  onIntersectionCleared: function (ev_) {
+    var cleared_els = ev_.detail.clearedEls;
     // Check if the current intersection has ended
-    if (clearedEls.indexOf(this.intersectedEl) === -1) { return; }
+    if (cleared_els.indexOf(this.intersected_el) === -1) { return; }
     this.clearCurrentIntersection();
   },
 
-  highlight_intersection: function(el_, point_, face_) {
-    console.log('intersection:', el_, point_, face_);
+  update_indicator: function(el_, point_, face_) {
+    let cursor_pos = new THREE.Vector3().addVectors(point_, face_.normal.multiplyScalar(0.1));
+    this.dest_indicator.setAttribute("position", cursor_pos);
+    let lookAtTarget = new THREE.Vector3().addVectors(point_, face_.normal);
+    this.dest_indicator.setAttribute("look-at", lookAtTarget);
   },
 
-  setIntersection: function (intersectedEl, intersection) {
-    var cursorEl = this.el;
-    var data = this.data;
-    var self = this;
+  setIntersection: function (intersected_el_, intersection_) {
+    let cursorEl = this.el;
 
     // Already intersecting.
-    if (this.intersectedEl === intersectedEl) { return; }
-
-    // console.log('ugh', intersectedEl, intersection.point, intersection.face);
-    this.highlight_intersection(intersectedEl, intersection.point, intersection.face);
-
+    // if (this.intersected_point === intersection_.point) { console.log('same_point'); return; }
+    this.update_indicator(intersected_el_, intersection_.point, intersection_.face);
 
     // Set new intersection.
-    this.intersectedEl = intersectedEl;
+    this.intersected_el = intersected_el_;
+    this.intersected_point = intersection_.point;
 
     // Hovering.
     cursorEl.addState(STATES.HOVERING);
-    intersectedEl.addState(STATES.HOVERED);
+    intersected_el_.addState(STATES.HOVERED);
     this.twoWayEmit(EVENTS.MOUSEENTER);
 
     if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === 'mouse') {
@@ -321,34 +314,31 @@ AFRAME.registerComponent('placement', {
     }
   },
 
-  clearCurrentIntersection: function (ignoreRemaining) {
-    var index;
-    var intersection;
-    var intersections;
-    var cursorEl = this.el;
+  clearCurrentIntersection: function (ignore_remaining_) {
+    let cursor_el = this.el;
 
     // Nothing to be cleared.
-    if (!this.intersectedEl) { return; }
+    if (!this.intersected_el) { return; }
 
     // No longer hovering
-    this.intersectedEl.removeState(STATES.HOVERED);
-    cursorEl.removeState(STATES.HOVERING);
+    this.intersected_el.removeState(STATES.HOVERED);
+    cursor_el.removeState(STATES.HOVERING);
     this.twoWayEmit(EVENTS.MOUSELEAVE);
 
-    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === 'mouse') {
-      this.el.sceneEl.canvas.classList.remove(CANVAS_HOVER_CLASS);
-    }
+    if (this.data.mouseCursorStylesEnabled && this.data.rayOrigin === 'mouse')
+    { this.el.sceneEl.canvas.classList.remove(CANVAS_HOVER_CLASS); }
 
     // Unset intersected entity (after emitting the event).
-    this.intersectedEl = null;
+    this.intersected_el = null;
+    this.intersected_point = null;
 
     // Set intersection to another raycasted element if any.
-    if (ignoreRemaining === true) { return; }
-    intersections = this.el.components.raycaster.intersections;
+    if (ignore_remaining_ === true) { return; }
+    let intersections = this.el.components.raycaster.intersections;
     if (intersections.length === 0) { return; }
     // Exclude the cursor.
-    index = intersections[0].object.el === cursorEl ? 1 : 0;
-    intersection = intersections[index];
+    let index = intersections[0].object.el === cursor_el ? 1 : 0;
+    let intersection = intersections[index];
     if (!intersection) { return; }
     this.setIntersection(intersection.object.el, intersection);
   },
@@ -356,20 +346,20 @@ AFRAME.registerComponent('placement', {
   /**
    * Helper to emit on both the cursor and the intersected entity (if exists).
    */
-  twoWayEmit: function (evtName) {
-    var el = this.el;
-    var intersectedEl = this.intersectedEl;
-    var intersection;
+  twoWayEmit: function (ev_name_) {
+    let el = this.el;
+    let intersected_el = this.intersected_el;
+    let intersection;
 
-    intersection = this.el.components.raycaster.getIntersection(intersectedEl);
-    this.eventDetail.intersectedEl = intersectedEl;
+    intersection = this.el.components.raycaster.getIntersection(intersected_el);
+    this.eventDetail.intersected_el = intersected_el;
     this.eventDetail.intersection = intersection;
-    el.emit(evtName, this.eventDetail);
+    el.emit(ev_name_, this.eventDetail);
 
-    if (!intersectedEl) { return; }
+    if (!intersected_el) { return; }
 
     this.intersectedEventDetail.intersection = intersection;
-    intersectedEl.emit(evtName, this.intersectedEventDetail);
+    intersected_el.emit(ev_name_, this.intersectedEventDetail);
   }
 });
 
@@ -427,3 +417,73 @@ class XRPlacement
   }
 }
 
+/**
+ * Crawling Cursor component for A-Frame.
+ */
+AFRAME.registerComponent('crawling-cursor', {
+	dependencies: ['raycaster'],
+	schema: {
+	  target: {
+	    type: "selector"
+	  },
+	  offset: {
+	    // How far above the intersection point does the cursor hover? (Default 5cm)
+	    type: "number",
+	    default: 0.05,
+	  }
+	},
+
+	multiple: false,
+
+	init: function() {
+	  var el = this.el;
+	  var data = this.data;
+
+	  if (data.target === null) {
+	    var cursor = document.querySelector("a-cursor");
+
+	    if (cursor === null) {
+	      console.warn("Please put a-cursor in a document");
+	      return;
+	    }
+
+	    data.target = cursor;
+	  }
+
+	  el.addEventListener("raycaster-intersection", function(e) {
+
+	    var intersection = getNearestIntersection(e.detail.intersections);
+	    if (!intersection) { return; }
+
+	    // a matrix which represents item's movement, rotation and scale on global world
+	    var mat = intersection.object.matrixWorld;
+	    // remove parallel movement from the matrix
+	    mat.setPosition(new THREE.Vector3(0, 0, 0));
+
+	    // change local normal into global normal
+	    var global_normal = intersection.face.normal.clone().applyMatrix4(mat).normalize();
+
+	    // look at target coordinate = intersection coordinate + global normal vector
+	    var lookAtTarget = new THREE.Vector3().addVectors(intersection.point, global_normal);
+	    data.target.object3D.lookAt(lookAtTarget);
+
+	    // cursor coordinate = intersection coordinate + normal vector * offset
+	    var cursorPosition = new THREE.Vector3().addVectors(intersection.point, global_normal.multiplyScalar(data.offset));
+	    data.target.setAttribute("position", cursorPosition);
+
+	    function getNearestIntersection(intersections) {
+	      for (var i = 0, l = intersections.length; i < l; i++) {
+
+	        // ignore cursor itself to avoid flicker && ignore "ignore-ray" class
+	        if (data.target === intersections[i].object.el || intersections[i].object.el.classList.contains("ignore-ray")) { continue; }
+	        return intersections[i];
+	      }
+	      return null;
+	    }
+	  });
+
+	  setInterval(function() {
+	    el.components.raycaster.refreshObjects();
+	  }, 100);
+	}
+});

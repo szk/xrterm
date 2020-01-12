@@ -6,17 +6,13 @@ const os = require('os');
 const pty = require('node-pty');
 const path = require('path');
 
-const cm = require('../common');
+const cm = require('../common.js');
 
-const svr_port = 8023;
-
+// const svr_port = cm.cm.COMM_PORT;
+const svr_port = cm.COMM_PORT;
 const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
-
 const server = new https.createServer();
-
-const wss = new WebSocket.Server({
-  server
-});
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (connection) => {
   const ptyProcess = pty.spawn(shell, [], {

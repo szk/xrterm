@@ -57,9 +57,8 @@ class XRInput
 
   onKeyDown(event_)
   {
-    var code;
     if (!shouldCaptureKeyEvent(event_)) { return; }
-    code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
+    let code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
 
     if (this.__state[code] != true) { this.__pressed[code] = true; console.log(event_.code); }
     this.__state[code] = true;
@@ -67,8 +66,7 @@ class XRInput
 
   onKeyUp(event_)
   {
-    var code;
-    code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
+    let code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
 
     if (this.__state[code] == true) { this.__released[code] = true; }
     delete this.__state[code];

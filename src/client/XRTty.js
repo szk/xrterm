@@ -3,6 +3,7 @@
  * MIT license
  */
 "use strict";
+// import XRScreen from 'XRScreen.js';
 
 class XRTty
 {
@@ -12,23 +13,14 @@ class XRTty
   }
 
   write(self_, message_) {
-    // if (message_.length != 1)
-    // {
-    //   this.term.write(message_[0]);
-    // }
-    // else
-    {
       self_.term.write(message_);
-    }
-    // message_.size();
-    // console.log("write: " + message_);
   }
   tick(self_, time_, timeDelta_) {}
   init(obj_)
   {
     const terminalElement = document.createElement('div');
-    terminalElement.setAttribute('style', `width: 512px; height: 256px; opacity: 0.0; overflow: hidden;`);
-
+    terminalElement.setAttribute('style',
+                                 `width: 512px; height: 256px; opacity: 0.0; overflow: hidden;`);
     obj_.el.appendChild(terminalElement);
     obj_.el.terminalElement = terminalElement;
 
@@ -43,16 +35,24 @@ class XRTty
 
     const term = new Terminal({
       theme: theme,
-      allowTransparency: true,
+      allowTransparency: false,
       cursorBlink: true,
       disableStdin: false,
       rows: obj_.data.rows,
       cols: obj_.data.cols,
-      fontSize: 64
+      fontSize: 12
     });
 
     obj_.term = term;
     term.open(terminalElement);
+
+    // var screen = new XRScreen();
+    // screen.activate(term);
+
+    // this.canvas = document.createElement('canvas');
+    // this.canvas.width = 4096;
+    // this.canvas.height = 2048;
+    // this.ctx = this.canvas.getContext('2d');
 
     obj_.canvas = terminalElement.querySelector('.xterm-text-layer');
     obj_.canvas.id = this.session.get_term_id();
@@ -62,15 +62,28 @@ class XRTty
     obj_.el.setAttribute('material', 'transparent', true);
     obj_.el.setAttribute('material', 'src', '#' + obj_.canvas.id);
 
-    term.on('refresh', () => {
-      const material = obj_.el.getObject3D('mesh').material;
-      if (!material.map) { return; }
-      obj_.canvasContext.drawImage(obj_.cursorCanvas, 0,0);
-      material.map.needsUpdate = true;
-    });
-
-    term.on('data', (data_) => { obj_.el.emit('xrtty-data', data_); });
+    term.onRender((o_) => { this.redraw(obj_); });
+    term.onData((data_) => { obj_.el.emit('xrtty-data', data_); });
     obj_.el.addEventListener('click', () => { term.focus(); });
+  }
+
+  redraw(obj_)
+  {
+    const material = obj_.el.getObject3D('mesh').material;
+    // material.map.image.width = 4096;
+    // material.map.image.height = 2048;
+    if (!material.map) { return; }
+
+    // obj_.canvasContext.scale(0.5, 0.5);
+    // obj_.canvasContext.drawImage(obj_.cursorCanvas,
+    //                              0, 0, 1024, 512,
+    //                              0, 0, 1024, 512);
+    // obj_.canvasContext.drawImage(this.ctx, 0, 0, 4096, 2048,
+    //                              0, 0, 4096, 2048);
+    // this.ctx.drawImage(obj_.cursorCanvas, 0, 0, 4096, 2048,
+    //                              0, 0, 4096, 2048);
+    obj_.canvasContext.drawImage(obj_.cursorCanvas, 0, 0);
+    material.map.needsUpdate = true;
   }
 
   register ()

@@ -1,16 +1,17 @@
+"use strict";
+
 /*
  * based on aframe-xterm-component by rangermauve
  * MIT license
  */
-"use strict";
 
 class XRDXTerm
 {
-  constructor ()
+  constructor()
   {
   }
 
-  register ()
+  register()
   {
     AFRAME.registerComponent('term-dx', {
       dependencies: ['xrtty'],

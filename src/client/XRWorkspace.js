@@ -21,6 +21,9 @@ class XRWorkspace
   {
     this.easing = 1.1;
     this.camera = document.querySelector('[camera]').object3D;
+
+    
+
   }
 
   getRandomColor()

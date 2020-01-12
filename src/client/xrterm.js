@@ -20,5 +20,4 @@ class XRTERM
     let dx_term = new XRDXTerm();
     dx_term.register();
   }
-
 }

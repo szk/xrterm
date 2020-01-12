@@ -1,3 +1,5 @@
+var isNode = (typeof process !== "undefined" && typeof require !== "undefined");
+
 var CM = CM || {};
 CM.COMM_PORT = 8023;
 
@@ -22,3 +24,5 @@ CM.WS_CMD = { NONE: 0,
               RESIZE_LEFT: 11,
 
             };
+
+if (isNode) { module.exports = CM; }
