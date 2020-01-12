@@ -6,10 +6,14 @@ Terminal Emulator for xR environment.
 ### Starting
 1. Install Node.js and NPM.
 1. If you don't have OS-native build system, please install it.
-1. Clone master branch or [download archive](https://github.com/szk/xrterm/archive/master.zip) and extract it.
-1. Type from command prompt:
-
+1. Clone master branch 
     <!-- language: sh -->
+        $ git clone https://github.com/szk/xrterm.git
+
+   or [download archive](https://github.com/szk/xrterm/archive/master.zip) and extract it.
+1. Type from command prompt:
+    <!-- language: sh -->
+        $ cd xrterm
         $ npm install
         $ npm start
 
