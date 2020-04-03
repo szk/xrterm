@@ -4,15 +4,23 @@ var ip = require('ip');
 var path = require('path');
 var webpack = require('webpack');
 
-PLUGINS = [
-  new webpack.EnvironmentPlugin(['NODE_ENV']),
+const PLUGINS = [
+  new webpack.EnvironmentPlugin(
+    {
+      NODE_ENV: 'development',
+      SSL: false,
+      DEBUG: false
+    }
+  ),
   new webpack.HotModuleReplacementPlugin()
 ];
+
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 module.exports = {
   devServer: {
     disableHostCheck: true,
-    hotOnly: true
+    hotOnly: true,
   },
   entry: {
     build: './scene/index.js',
@@ -25,7 +33,7 @@ module.exports = {
     {
       "local-node-pty": true
     }
-    ],
+  ],
   plugins: PLUGINS,
   module: {
     rules: [
@@ -50,7 +58,7 @@ module.exports = {
             }
           },
           {
-           loader: 'html-require-loader',
+            loader: 'html-require-loader',
             options: {
               root: path.resolve(__dirname, 'scene')
             }

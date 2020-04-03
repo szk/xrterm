@@ -1,0 +1,146 @@
+# Node.js
+# Build a general Node.js application with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/vsts/pipelines/languages/javascript
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  variables:
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+    displayName: 'Install Yarn'
+  - task: CacheBeta@1
+    inputs:
+      key: yarn2 | $(Agent.OS) | yarn.lock
+      path: node_modules
+    displayName: Cache node modules
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: |
+      yarn test-unit-coverage --forbid-only
+      ./node_modules/.bin/nyc report --reporter=cobertura
+    displayName: 'Unit tests'
+  - script: yarn lint
+    displayName: 'Lint'
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+    displayName: 'Publish coverage'
+
+- job: macOS
+  pool:
+    vmImage: 'xcode9-macos10.13'
+  variables:
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - task: CacheBeta@1
+    inputs:
+      key: yarn2 | $(Agent.OS) | yarn.lock
+      path: node_modules
+    displayName: Cache node modules
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: yarn test-unit --forbid-only
+    displayName: 'Unit tests'
+  - script: yarn lint
+    displayName: 'Lint'
+
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2016'
+  variables:
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - task: CacheBeta@1
+    inputs:
+      key: yarn2 | $(Agent.OS) | yarn.lock
+      path: node_modules
+    displayName: Cache node modules
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: yarn test-unit --forbid-only
+    displayName: 'Unit tests'
+  - script: yarn lint
+    displayName: 'Lint'
+
+- job: Linux_IntegrationTests
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+    displayName: 'Install Yarn'
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: |
+      yarn start &
+      sleep 10
+      yarn test-api --headless --forbid-only
+    displayName: 'Linux Integration tests'
+
+- job: macOS_IntegrationTests
+  pool:
+    vmImage: 'xcode9-macos10.13'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: |
+      yarn start &
+      sleep 10
+      yarn test-api --headless --forbid-only
+    displayName: 'MacOS Integration tests'
+
+- job: Release
+  dependsOn:
+  - Linux
+  - macOS
+  - Windows
+  - Linux_IntegrationTests
+  - macOS_IntegrationTests
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['FORCE_RELEASE'], 'true')))
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - task: YarnInstaller@3
+    inputs:
+      versionSpec: '1.x'
+    displayName: 'Install Yarn'
+  - task: CacheBeta@1
+    inputs:
+      key: yarn2 | $(Agent.OS) | yarn.lock
+      path: node_modules
+  - script: yarn --frozen-lockfile
+    displayName: 'Install dependencies and build'
+  - script: NPM_AUTH_TOKEN="$(NPM_AUTH_TOKEN)" node ./bin/publish.js
+    displayName: 'Package and publish to npm'

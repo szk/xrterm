@@ -7,8 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "preinstall": "cd local_modules && (cd node-pty && npm install)",
     "server": "nodemon ./src/server/server.js",
-    "client": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 8080",
-    "start": "concurrently --kill-others \"npm run server\" \"npm run client\""
+    "client": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 8443 --disableHostCheck=true",
+    "client-ssl": "webpack-dev-server --https --host 0.0.0.0 --progress --colors --hot-only --inline --port 8443 --disableHostCheck=true",
+    "start": "concurrently --kill-others \"npm run server\" \"npm run client\"",
+    "start-ssl": "concurrently --kill-others \"npm run server\" \"npm run client-ssl\""
   },
   "repository": {
     "type": "git",

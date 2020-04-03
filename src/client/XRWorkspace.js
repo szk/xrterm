@@ -7,6 +7,14 @@ class XRWorkspace
 {
   constructor()
   {
+    // this.intersect_mesh = null;
+		// var geometry = new THREE.BufferGeometry();
+		// geometry.addAttribute('position',
+    //                       new THREE.BufferAttribute( new Float32Array( 4 * 3 ), 3 ) );
+		// var material = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true } );
+    // this.intersect_line = new THREE.Line( geometry, material );
+
+
     this.input = new XRInput();
     this.config = new XRConfig();
 
@@ -21,9 +29,6 @@ class XRWorkspace
   {
     this.easing = 1.1;
     this.camera = document.querySelector('[camera]').object3D;
-
-    
-
   }
 
   getRandomColor()
