@@ -1,6 +1,7 @@
 var isNode = (typeof process !== "undefined" && typeof require !== "undefined");
 
 var CM = CM || {};
+CM.CONFIG_FILENAME = 'xrterm.conf';
 CM.COMM_PORT = 8023;
 
 CM.WS_MODE = { NONE:0,

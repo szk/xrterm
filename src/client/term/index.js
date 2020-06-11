@@ -1,2 +1,0 @@
-// Components
-require('./XRScreen.js');

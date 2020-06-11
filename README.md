@@ -5,7 +5,7 @@ Terminal Emulator for xR environment.
 ## Quick instruction
 ### Starting
 1. Install Node.js and NPM.
-1. If you don't have OS-native build system, please install it.
+1. If you don't have OS-native build system, please install it. ('https://github.com/felixrieseberg/windows-build-tools', )
 1. Clone master branch 
     <!-- language: sh -->
         $ git clone https://github.com/szk/xrterm.git

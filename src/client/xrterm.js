@@ -4,20 +4,20 @@ class XRTERM
 {
   constructor()
   {
-    this.session = new XRSession();
+    this.session = new XRTSession();
   }
 
   init()
   {
-    let ws = new XRWorkspace();
+    let ws = new XRTWorkspace();
     ws.register();
-    // let placement = new XRPlacement();
+    // let placement = new XRTPlacement();
     // placement.register();
-    let xrtty = new XRTty(this.session);
+    let xrtty = new XRTTty(this.session);
     xrtty.register();
-    let base_term = new XRBaseTerm();
+    let base_term = new XRTTermBase();
     base_term.register();
-    let dx_term = new XRDXTerm();
+    let dx_term = new XRTTermDX();
     dx_term.register();
   }
 }

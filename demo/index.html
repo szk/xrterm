@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>xrterm pre-0</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="../src/lib/xterm/xterm.css" />
+    <!-- Libs -->
+    <script type="text/javascript" src="../src/lib/xterm/xterm.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe/aframe-v1.0.4.min.js"></script>
+    <!-- <script type="text/javascript" src="build/build.js"></script> -->
+
+    <script type="text/javascript" src="../src/lib/aframe/aabb-collider.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe/grab.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe/aframe-event-set-component.min.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe-gui/aframe-gui.min.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe-html-shader/aframe-html-shader.min.js"></script>
+
+    <!-- Main -->
+    <script type="text/javascript" src="../src/common.js"></script>
+    <script type="text/javascript" src="../src/util.js"></script>
+    <script type="text/javascript" src="../src/client/XRTInput.js"></script>
+    <script type="text/javascript" src="../src/client/XRTConfig.js"></script>
+    <script type="text/javascript" src="../src/client/XRTPlacement.js"></script>
+    <script type="text/javascript" src="../src/client/XRTSession.js"></script>
+    <script type="text/javascript" src="../src/client/XRTWorkspace.js"></script>
+    <script type="text/javascript" src="../src/client/XRTTheme.js"></script>
+    <script type="text/javascript" src="../src/client/XRTTty.js"></script>
+    <script type="text/javascript" src="../src/client/XRTTermBase.js"></script>
+    <script type="text/javascript" src="../src/client/XRTTermDX.js"></script>
+    <script type="text/javascript" src="../src/client/xrterm.js"></script>
+
+    <!-- Components for scene-->
+    <script type="text/javascript" src="../scene/components/environment.js"></script>
+    <!-- Demo -->
+    <script type="text/javascript" src="./demo.js"></script>
+
+    <script type="text/javascript">
+     let xrterm = new XRTERM();
+     xrterm.init();
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <a-scene environment="preset: forest; seed: 1;">
+        <a-entity raycaster="objects: .terminal" cursor="rayOrigin: mouse">
+          <!-- placement="rayOrigin:mouse" -->
+          <a-entity workspace>
+            <a-curvedimage
+              term-dx
+              class="terminal"
+              theta-length="60"
+              radius="6"
+              height="4"
+              rotation="0 150 0"
+              position="10 4 2"
+            ></a-curvedimage>
+            <a-curvedimage
+              term-dx
+              class="terminal"
+              theta-length="60"
+              radius="6"
+              height="4"
+              rotation="0 150 0"
+              position="0 4 2"
+            ></a-curvedimage>
+            <a-entity geometry="primitive: box" material="color:yellow" position="1 0 -1"/>
+          </a-entity>
+        </a-entity>
+        <!-- Box. -->
+        <!-- <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-1 0.5 -3" rotation="0 45 0" shadow></a-entity> -->
+
+        <!-- Sphere. -->
+        <!-- <a-entity geometry="primitive: sphere; radius: 1.25" material="color: #EF2D5E" position="0 1.25 -5" shadow></a-entity> -->
+
+        <!-- Cylinder. -->
+        <!-- <a-entity geometry="primitive: cylinder; radius: 0.5; height: 1.5" material="color: #FFC65D" position="1 0.75 -3" shadow spin></a-entity> -->
+
+
+        <!-- <a-entity laser-controls hand-controls="left" grab></a-entity>
+             <a-entity laser-controls hand-controls="right" grab></a-entity> -->
+
+      </a-scene>
+    </div>
+  </body>
+</html>

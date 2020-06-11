@@ -1,53 +1,53 @@
-var fs = require('fs');
+var electron = require('electron');
 var ip = require('ip');
 var path = require('path');
 var webpack = require('webpack');
 
 const PLUGINS = [
-  // new webpack.EnvironmentPlugin(
-  //   {
-  //     NODE_ENV: 'development',
-  //     SSL: false,
-  //     DEBUG: false
-  //   }
-  // ),
+  new webpack.EnvironmentPlugin(
+    {
+      NODE_ENV: 'development',
+      SSL: false,
+      DEBUG: false
+    }
+  ),
   new webpack.HotModuleReplacementPlugin()
 ];
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const scene_path = path.join(electron.app.getPath("userData"), 'scene');
+const node_modules_path = path.join(electron.app.getAppPath(), 'node_modules');
 
 module.exports = {
+  target: 'electron-renderer',
   mode: 'development',
-  devServer: {
-    disableHostCheck: false,
-    hotOnly: true,
-    contentBase: path.join(__dirname, './')
-  },
   entry: {
-    build: path.join(__dirname, 'scene', 'index.js')
+    build: path.join(scene_path, 'index.js')
   },
   output: {
     path: __dirname,
     filename: 'build/[name].js'
   },
-  externals: [
-    {
-      "local-node-pty": true
-    }
-  ],
   plugins: PLUGINS,
   module: {
+    noParse: /\.html|\.glsl/,
     rules: [
       {
         test: /\.js/,
+        use: [{ loader: 'babel-loader' }, { loader: 'aframe-super-hot-loader' } ],
         exclude: /(node_modules)/,
-        use: ['babel-loader', 'aframe-super-hot-loader']
+        include: node_modules_path
+      },
+      {
+        test: /\.html/,
+        use: { loader: path.join(node_modules_path, 'aframe-super-hot-html-loader') },
+        exclude: /(node_modules)/,
       },
       {
         test: /\.html/,
         exclude: /(node_modules)/,
+        include: node_modules_path,
         use: [
-          'aframe-super-hot-html-loader',
           {
             loader: 'super-nunjucks-loader',
             options: {
@@ -55,21 +55,22 @@ module.exports = {
                 HOST: ip.address(),
                 IS_PRODUCTION: process.env.NODE_ENV === 'production'
               },
-              path: process.env.NUNJUCKS_PATH || path.join(__dirname, 'scene')
+              path: process.env.NUNJUCKS_PATH || scene_path
             }
           },
           {
             loader: 'html-require-loader',
             options: {
-              root: path.resolve(__dirname, 'scene')
+              root: scene_path
             }
           }
         ]
       },
       {
         test: /\.glsl/,
-        exclude: /(node_modules)/,
-        loader: 'webpack-glsl-loader'
+        loader: 'webpack-glsl-loader',
+        include: node_modules_path,
+        exclude: /(node_modules)/
       },
       {
         test: /\.css$/,
@@ -84,6 +85,8 @@ module.exports = {
     ]
   },
   resolve: {
-    modules: [path.join(__dirname, 'node_modules')]
+    extensions: ['.js', '.jsx', '.json', '.html'],
+    modules: [node_modules_path],
   }
 };
+
