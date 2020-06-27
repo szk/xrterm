@@ -12,10 +12,6 @@ class XRTTty
     this.session = session_;
   }
 
-  write(self_, message_) {
-      self_.term.write(message_);
-  }
-  tick(self_, time_, timeDelta_) {}
   init(obj_)
   {
     const terminalElement = document.createElement('div');
@@ -46,6 +42,9 @@ class XRTTty
     obj_.term = term;
     term.open(terminalElement);
 
+
+
+
     // var screen = new XRTScreen();
     // screen.activate(term);
 
@@ -66,6 +65,12 @@ class XRTTty
     term.onData((data_) => { obj_.el.emit('xrtty-data', data_); });
     obj_.el.addEventListener('click', () => { term.focus(); });
   }
+
+  write(self_, message_) { self_.term.write(message_); }
+  tick(self_, time_, timeDelta_) {}
+  get_core(self_) { return self_.term._core; }
+  get_col_num(self_) { return self_.term.cols; }
+  get_term(self_) { return self_.term; }
 
   redraw(obj_)
   {
@@ -103,7 +108,11 @@ class XRTTty
       }, TERMINAL_THEME),
       init: function() { self_tty.init(this); },
       write: function(message_) { self_tty.write(this, message_); },
-      tick: function(time_, delta_) { self_tty.tick(this, time_, delta_); }
+      tick: function(time_, delta_) { self_tty.tick(this, time_, delta_); },
+      get_core: function() { return self_tty.get_core(this); },
+      get_buffer: function() { return self_tty.get_core(this).buffer; },
+      get_col_num: function() { return self_tty.get_col_num(this); },
+      get_term: function() { return self_tty.get_term(this); }
     });
   }
 }

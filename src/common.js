@@ -1,6 +1,19 @@
 var isNode = (typeof process !== "undefined" && typeof require !== "undefined");
 
 var CM = CM || {};
+CM.DEMO_PROMPT = "$ ";
+CM.DEMO_CONTINUOUS_PROMPT = "> ";
+CM.DEMO_BANNER =
+" ████████╗███████╗██████╗ ███╗   ███╗      ██████╗ ███████╗███╗   ███╗ ██████╗ \r\n" +
+" ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║      ██╔══██╗██╔════╝████╗ ████║██╔═══██╗\r\n" +
+"    ██║   █████╗  ██████╔╝██╔████╔██║█████╗██║  ██║█████╗  ██╔████╔██║██║   ██║\r\n" +
+"    ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║╚════╝██║  ██║██╔══╝  ██║╚██╔╝██║██║   ██║\r\n" +
+"    ██║   ███████╗██║  ██║██║ ╚═╝ ██║      ██████╔╝███████╗██║ ╚═╝ ██║╚██████╔╝\r\n" +
+"    ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝      ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝ \r\n" +
+"Acceptable commands:                                                           \r\n" +
+"|, ls -l -a, cd, pwd, history, cat -n, touch, mkdir,                           \r\n" +
+"mv -n, cp -r -R, rm -r -R, rmdir                                               \r\n";
+
 CM.CONFIG_FILENAME = 'xrterm.conf';
 CM.COMM_PORT = 8023;
 
@@ -16,14 +29,15 @@ CM.WS_CMD = { NONE: 0,
 
               MOVE_UP: 4,
               MOVE_DOWN: 5,
-              MOVE_RIGHT: 6,
-              MOVE_LEFT: 7,
+              MOVE_FORWARD: 6,
+              MOVE_BACKWARD: 7,
+              MOVE_RIGHT: 8,
+              MOVE_LEFT: 9,
 
-              RESIZE_UP: 8,
-              RESIZE_DOWN: 9,
-              RESIZE_RIGHT: 10,
-              RESIZE_LEFT: 11,
-
+              RESIZE_UP: 10,
+              RESIZE_DOWN: 11,
+              RESIZE_RIGHT: 12,
+              RESIZE_LEFT: 13,
             };
 
 if (isNode) { module.exports = CM; }

@@ -4,7 +4,7 @@ class XRTConfig
 {
   constructor()
   {
-    this.config = require("config");
+    // this.config = require("config");
 
   }
 

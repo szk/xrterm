@@ -1,4 +1,35 @@
 'use strict';
+
+class XRTDemo
+{
+  constructor()
+  {
+    this.session = new XRTSession();
+  }
+
+  init()
+  {
+    this.init_xrterm();
+    
+  }
+  
+  init_xrterm()
+  {
+    let ws = new XRTWorkspace();
+    ws.register();
+    // let placement = new XRTPlacement();
+    // placement.register();
+    let xrtty = new XRTTty(this.session);
+    xrtty.register();
+    let term_demo = new XRTTermDemo();
+    term_demo.register();
+    let term_base = new XRTTermBase();
+    term_base.register();
+    let term_dx = new XRTTermDX();
+    term_dx.register();
+  }
+}
+
 /*
 // This file is refered from https://github.com/xtermjs/xtermjs.org/blob/master/js/demo.js
 // The MIT License (MIT) - Copyright (c) 2016 xterm.js

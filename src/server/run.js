@@ -1,6 +1,6 @@
 "use strict";
-const CmdServer = require('./server.js');
+const XRTServer = require('./XRTServer.js');
 
-const cmd_svr = new CmdServer();
-cmd_svr.init();
-cmd_svr.start();
+const svr = new XRTServer();
+svr.init();
+svr.start();

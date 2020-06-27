@@ -19,13 +19,13 @@
     "url": "git+https://github.com/szk/xrterm.git"
   },
   "keywords": [
-    "aframe",
     "vr",
     "xr",
+    "aframe",
     "terminal",
     "commandline",
-    "xterm",
-    "xrterm"
+    "xrterm",
+    "xterm"
   ],
   "author": "szk",
   "license": "MIT",

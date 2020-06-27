@@ -1,0 +1,15 @@
+{
+  "command":{
+    "move-up": "space",
+    "move-down": "c",
+    "move-forward": "w",
+    "move-backward": "s",
+    "move-right": "d",
+    "move-left": "a",
+
+    "resize-up": "k",
+    "resize-down": "j",
+    "resize-right": "l",
+    "resize-left": "h",
+  }
+}

@@ -15,9 +15,9 @@ class XRTERM
     // placement.register();
     let xrtty = new XRTTty(this.session);
     xrtty.register();
-    let base_term = new XRTTermBase();
-    base_term.register();
-    let dx_term = new XRTTermDX();
-    dx_term.register();
+    let term_base = new XRTTermBase();
+    term_base.register();
+    let term_dx = new XRTTermDX();
+    term_dx.register();
   }
 }

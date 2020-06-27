@@ -17,19 +17,19 @@ class XRTTermDX
       dependencies: ['xrtty'],
       init: function() {
         const message = 'Initialized\r\n';
-        const tty_base = this.el.components['xrtty'];
+        const tty = this.el.components['xrtty'];
 
-        tty_base.write(message);
+        tty.write(message);
 
         const socket = new WebSocket('ws://localhost:' + String(CM.COMM_PORT)+ '/');
 
         // Listen on data, write it to the terminal
         socket.onmessage = ({data}) => {
-          tty_base.write(data);
+          tty.write(data);
         };
 
         socket.onclose = () => {
-          tty_base.write('\r\nConnection closed.\r\n');
+          tty.write('\r\nConnection closed.\r\n');
         };
 
         // Listen on user input, send it to the connection
