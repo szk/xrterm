@@ -3,7 +3,6 @@
  * MIT license
  */
 "use strict";
-// import XRScreen from 'XRScreen.js';
 
 class XRTTty
 {
@@ -16,7 +15,7 @@ class XRTTty
   {
     const terminalElement = document.createElement('div');
     terminalElement.setAttribute('style',
-                                 `width: 512px; height: 256px; opacity: 0.0; overflow: hidden;`);
+                                 `width: 512px; height: 512px; opacity: 0.0; overflow: hidden;`);
     obj_.el.appendChild(terminalElement);
     obj_.el.terminalElement = terminalElement;
 

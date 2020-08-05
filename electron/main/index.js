@@ -8,6 +8,8 @@ import CM from '../../src/common.js';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+
+//// Run http server
 const HttpServer = require('webpack-dev-server');
 const webpack = require('webpack');
 const webpackConfig = require('../../webpack.electron.config.js');
@@ -39,9 +41,16 @@ http_svr.listen(port, host, () => {
   const configDir =  (app || remote.app).getPath('userData');
 });
 
-////////// Store
+//// Store scene data and user data
 const Store = require('./store.js');
 
+//// Run command server
+const CmdServer = require('../../src/server/XRTserver.js');
+let cmd_svr = new CmdServer();
+cmd_svr.init();
+cmd_svr.start();
+
+//// Create Electron window
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 
@@ -53,37 +62,17 @@ function createMainWindow() {
   }
 
   window.loadURL(`http://localhost:3000`);
+  // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
-  // if (isDevelopment) {
-  //   window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
-  // }
-  // else {
-  //   window.loadURL(formatUrl({
-  //     pathname: path.join(__dirname, 'index.html'),
-  //     protocol: 'file',
-  //     slashes: true
-  //   }))
-  // }
-
-  window.on('closed', () => {
-    mainWindow = null;
-  });
+  window.on('closed', () => { mainWindow = null; });
 
   window.webContents.on('devtools-opened', () => {
     window.focus();
-    setImmediate(() => {
-      window.focus();
-    });
+    setImmediate(() => { window.focus(); });
   });
 
   return window;
 }
-
-////////////////////////////////////////////////////
-const CmdServer = require('../../src/server/server.js');
-let cmd_svr = new CmdServer();
-cmd_svr.init();
-cmd_svr.start();
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {

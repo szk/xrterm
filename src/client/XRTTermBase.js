@@ -36,11 +36,20 @@ class XRTTermBase
 
   register ()
   {
-    let self_bs = this;
+    let self_ = this;
 
     AFRAME.registerComponent('term-base', {
       dependencies: ['xrtty'],
-      init: function() { self_bs.init(this); }
+      schema: {
+        event: {type: 'string', default: ''},
+        message: {type: 'string', default: 'Hello, World!'}
+      },
+      init: function() { self_.init(this); }
     });
+  }
+
+  get_dragging_type()
+  {
+    return CM.WS_PLACEMENT.PLANE;
   }
 }

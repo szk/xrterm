@@ -10,19 +10,12 @@ class XRTTermDemo
   {
   }
 
-  async repl (echo_, bash_, tty_)
-  {
-    echo_.read(CM.DEMO_PROMPT, CM.DEMO_CONTINUOUS_PROMPT)
-      .then(input => bash_.run(input).then((log_) => { tty_.write(log_); tty_.write('\r\n'); this.repl(echo_, bash_, tty_); },
-                                           (error_) => { tty_.write(error_); tty_.write('\r\n');  this.repl(echo_, bash_, tty_);}))
-      .catch(error => console.log(`Error reading: ${error}`));
-  }
-
   init(self_)
   {
-    const message = 'Initialized\r\n';
     let tty = self_.el.components['xrtty'];
-    const bash = this.init_bash_emulator();
+    const bash = this.init_bash_emulator_();
+
+    self_.el.addEventListener('xrtty-data', (e_) => { this.interaction_(self_, e_); });
 
     const localEcho = new LocalEchoController();
     tty.term.loadAddon(localEcho);
@@ -30,86 +23,65 @@ class XRTTermDemo
       if (index == 0) { return Object.keys(bash.commands); }
       return [];
     });
-    
-    console.log(bash.state);
-    
+
     tty.command = '';
     tty.write(CM.DEMO_BANNER);
-    this.repl(localEcho, bash, tty);
+    this.repl_(localEcho, bash, tty);
   }
 
-  init_bak(self_)
+  repl_(echo_, bash_, tty_)
   {
-    const message = 'Initialized\r\n';
-    const tty = self_.el.components['xrtty'];
-    const bash = this.init_bash_emulator();
-
-    tty.command = '';
-    tty.write(CM.DEMO_BANNER);
-    this.write_newline_(tty);
-    this.write_prompt_(tty);
-
-    self_.el.addEventListener('xrtty-data', (e_) => {
-      switch (e_.detail) {
-        case '\r': // Enter
-          this.write_newline_(tty);
-          bash.run(tty.command).then((log_) => { tty.write(log_); },
-                                     (error_) => { tty.write(error_); })
-            .finally(() => { this.write_newline_(tty); this.write_prompt_(tty); tty.command = ''; });
-          break;
-        case '\u0003': // Ctrl+C
-          this.write_prompt_(tty);
-          tty.command = '';
-          break;
-        case '\u007F': // Backspace (DEL)
-          // Do not delete the prompt
-          if (tty.get_buffer().x > 2)
-          {
-            tty.write('\b \b');
-            tty.command = tty.command.slice(0, -1);
-          }
-          break;
-        case '\u0009': // Tab
-          console.log('tabbed');
-          break;
-        case '\u001b[A': // Up
-          this.clear_line_(tty);
-          bash.completeUp(tty.command)
-            .then((value_) => { if (value_ != undefined) { tty.write(value_); tty.command = value_; } });
-          break;
-        case '\u001b[B': // Down
-          this.clear_line_(tty);
-          bash.completeDown(tty.command)
-            .then((value_) => { if (value_ != undefined) { tty.write(value_); tty.command = value_; } });;
-          break;
-        case '\u001b[D': // Left
-          console.log('l');
-          if (tty.get_buffer().x > 2)
-          {
-            tty.write(e_.detail);
-          }
-          break;
-        case '\u001b[C': // Right
-          console.log('r');
-          // if (tty.get_buffer().x > 2)
-          {
-            tty.write(e_.detail);
-          }
-          break;
-        default: // Print all other characters for demo
-          if (tty.command.length + CM.DEMO_PROMPT.length >= tty.get_col_num())
-          {
-            console.log("over!");
-          }
-
-          tty.write(e_.detail);
-          tty.command = tty.command + e_.detail;
-      }
-      console.log(tty.command);
-    });
+    echo_.read(CM.DEMO_PROMPT, CM.DEMO_CONTINUOUS_PROMPT)
+      .then(input => bash_.run(input).then((log_) => { tty_.write(log_); tty_.write('\r\n'); this.repl_(echo_, bash_, tty_); },
+                                           (error_) => { tty_.write(error_); tty_.write('\r\n');  this.repl_(echo_, bash_, tty_);}))
+      .catch(error => console.log(`Error reading: ${error}`));
   }
 
-  init_bash_emulator()
+  interaction_(self_, event_)
+  {
+    let command = CM.Config.key_to_cmd_term(event_.detail);
+    let tty = self_.el.components['xrtty'];
+    let rows = tty.term.rows, cols = tty.term.cols;
+    let pos_wld = new THREE.Vector3();
+    self_.el.object3D.getWorldPosition(pos_wld);
+
+    switch (command) {
+      case CM.WS_CMD.MOVE_UP:
+        pos_wld.y += 1.0;
+        break;
+      case CM.WS_CMD.MOVE_DOWN:
+        pos_wld.y -= 1.0;
+        break;
+      case CM.WS_CMD.MOVE_LEFT:
+        pos_wld.x -= 1.0;
+        break;
+      case CM.WS_CMD.MOVE_RIGHT:
+        pos_wld.x += 1.0;
+        break;
+
+      case CM.WS_CMD.RESIZE_UP:
+        rows += 1;
+        break;
+      case CM.WS_CMD.RESIZE_DOWN:
+        rows -= 1;
+        break;
+      case CM.WS_CMD.RESIZE_LEFT:
+        cols -= 1;
+        break;
+      case CM.WS_CMD.RESIZE_RIGHT:
+        cols += 1;
+        break;
+
+      default: break;
+    }
+    self_.el.setAttribute('animation', "property: position; to:"
+                          + pos_wld.x.toString() + " " +  pos_wld.y.toString() + " " +  pos_wld.z.toString()
+                          + "; dur: 200; easing: easeOutExpo; loop: false");
+    // animation="property: position; to: 1 8 -10; dur: 2000; easing: linear; loop: true"
+    // tty.term.resize(rows, cols);
+  }
+
+  init_bash_emulator_()
   {
     var emulator = bashEmulator({
       workingDirectory: '/',
@@ -142,13 +114,18 @@ class XRTTermDemo
     return emulator;
   }
 
-  register ()
+  register()
   {
-    let self_bs = this;
+    let self_ = this;
 
     AFRAME.registerComponent('term-demo', {
       dependencies: ['xrtty'],
-      init: function() { self_bs.init(this); }
+      init: function() { self_.init(this); }
     });
+  }
+
+  get_dragging_type()
+  {
+    return CM.WS_PLACEMENT.PLANE;
   }
 }

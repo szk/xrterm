@@ -4,63 +4,42 @@ var path = require('path');
 var fs = require("fs");
 var fsj = require("fs-jetpack");
 
-// referred:
-// https://gist.github.com/coclav/4fd17efc9efa2c0517b2
-
 class DefaultScene
 {
-  constructor(opts)
+  constructor(opts_)
   {
-    // this.scene_html = ""
   }
 
   init(app_)
   {
     this.app = app_;
     this.original_cwd = process.cwd();
-    // makef.createFile({
-    //   // The following file will be created with empty content
-    //   'a.txt': '',
-    //   // The following file will be created in subdirectory b
-    //   'b/c.log': 'some data',
-    //   // The following file will not be created
-    //   'd.file': false,
-    //   // The object that is specified as content will be converted to JSON
-    //   'file.json': {some: 'data'}
-    // });
   }
 
-  make()
+  copy(src_, dest_)
   {
-    // process.chdir('/temp/foo');
-    // process.chdir();
-  }
-  copy(sourceInAsarArchive, destOutsideAsarArchive)
-  {
-    copyFileOutsideOfElectronAsar(this.app, sourceInAsarArchive, destOutsideAsarArchive);
+    crawl_asar(this.app, src_, dest_);
   }
 }
 
-var copyFileOutsideOfElectronAsar = function(app, sourceInAsarArchive, destOutsideAsarArchive)
+var crawl_asar = function(app, src_, dest_)
 {
-  if ( fs.existsSync( path.join(app.getAppPath(), sourceInAsarArchive) ) )
+  if ( fs.existsSync( path.join(app.getAppPath(), src_) ) )
   {
     // file will be copied
-    if ( fs.statSync( path.join(app.getAppPath(), sourceInAsarArchive) ).isFile() )
+    if ( fs.statSync( path.join(app.getAppPath(), src_) ).isFile() )
     {
-      fsj.file( destOutsideAsarArchive, { mode: '644', content: fs.readFileSync( path.join(app.getAppPath(), sourceInAsarArchive), "utf8") });
+      fsj.file( dest_, { mode: '644', content: fs.readFileSync( path.join(app.getAppPath(), src_), "utf8") });
     }
 
     // dir is browsed
-    else if ( fs.statSync( path.join(app.getAppPath(), sourceInAsarArchive) ).isDirectory() ) {
-
-      fs.readdirSync( path.join(app.getAppPath(), sourceInAsarArchive) ).forEach(function(fileOrFolderName) {
-
-        copyFileOutsideOfElectronAsar(app, path.join(sourceInAsarArchive, fileOrFolderName), path.join(destOutsideAsarArchive, fileOrFolderName) );
+    else if ( fs.statSync( path.join(app.getAppPath(), src_) ).isDirectory() )
+    {
+      fs.readdirSync( path.join(app.getAppPath(), src_) ).forEach(function(fileOrFolderName) {
+        crawl_asar(app, path.join(src_, fileOrFolderName), path.join(dest_, fileOrFolderName) );
       });
     }
   }
-
 };
 
 module.exports = DefaultScene;

@@ -7,19 +7,24 @@
     <!-- Libs -->
     <script type="text/javascript" src="../src/lib/xterm/xterm.js"></script>
     <script type="text/javascript" src="../src/lib/aframe/aframe-v1.0.4.min.js"></script>
-    <!-- <script type="text/javascript" src="build/build.js"></script> -->
 
     <script type="text/javascript" src="../src/lib/aframe/aabb-collider.js"></script>
     <script type="text/javascript" src="../src/lib/aframe/grab.js"></script>
     <script type="text/javascript" src="../src/lib/aframe/aframe-event-set-component.min.js"></script>
-    <script type="text/javascript" src="../src/lib/aframe-gui/aframe-gui.min.js"></script>
-    <script type="text/javascript" src="../src/lib/aframe-html-shader/aframe-html-shader.min.js"></script>
+    <!-- <script type="text/javascript" src="../src/lib/aframe-gui/aframe-gui.min.js"></script> -->
+    <!-- <script type="text/javascript" src="../src/lib/aframe-html-shader/aframe-html-shader.min.js"></script> -->
 
     <!-- Main -->
     <script type="text/javascript" src="../src/common.js"></script>
     <script type="text/javascript" src="../src/util.js"></script>
+
+    <script type="text/javascript" src="../src/client/space/XRTSpcPlane.js"></script>
+    <script type="text/javascript" src="../src/client/space/XRTSpcCylinder.js"></script>
+    <script type="text/javascript" src="../src/client/space/XRTSpcSphere.js"></script>
+
     <script type="text/javascript" src="../src/client/XRTInput.js"></script>
     <script type="text/javascript" src="../src/client/XRTConfig.js"></script>
+    <script type="text/javascript" src="../src/client/XRTCommand.js"></script>
     <script type="text/javascript" src="../src/client/XRTPlacement.js"></script>
     <script type="text/javascript" src="../src/client/XRTSession.js"></script>
     <script type="text/javascript" src="../src/client/XRTWorkspace.js"></script>
@@ -32,12 +37,14 @@
     <script type="text/javascript" src="../scene/components/environment.js"></script>
     <!-- Demo -->
 
+    <script type="text/javascript" src="./lib/aframe-slice9-component.js"></script>
     <script type="text/javascript" src="./lib/bash-emulator.min.js"></script>
     <script type="text/javascript" src="./lib/local-echo.min.js"></script>
     <script type="text/javascript" src="../src/client/XRTTermDemo.js"></script>
     <script type="text/javascript" src="./demo.js"></script>
 
     <script type="text/javascript">
+     CM.BUILD = 'DEMO';
      let xrterm_demo = new XRTDemo();
      xrterm_demo.init();
     </script>
@@ -46,35 +53,69 @@
     <div id="app">
       <a-scene
         environment="preset: forest; seed: 42; lightPosition: 0 2 4;">
-        <a-entity raycaster="objects: .terminal" cursor="rayOrigin: mouse">
-          <a-entity workspace>
-            <a-plane
-              term-demo
-              class="terminal"
-              height="4"
-              width="6"
-              rotation="-20 0 0"
-              position="0 2 -4"
-              shadow
-            ></a-plane>
+        <!-- <a-assets><img id="my-texture" src="scene/tooltip.png"></a-assets>
+        --><!-- <a-entity slice9="width: 2; height: 1; left: 20; right: 43; top: 20; bottom: 43; src: url(scene/tooltip.png);"
+                material="src: url(img/frame.png)" position="0 1 -2" rotation="" scale="" visible="">
+                </a-entity>
+           -->
+        <a-entity workspace raycaster="objects: .collidable" cursor="rayOrigin: mouse">
+          <a-plane
+            term-demo
+            class="collidable is-drag-on-plane"
+            height="4"
+            width="6"
+            rotation="-20 0 0"
+            position="0 2 -4"
+            shadow
+          ></a-plane>
 
-            <a-curvedimage
-              term-demo
-              class="terminal"
-              theta-length="60"
-              radius="6"
-              height="4"
-              rotation="0 80 0"
-              position="0 3 0"
-              shadow
-            ></a-curvedimage>
-            <!-- Box. -->
-            <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-6 0.5 -3" rotation="0 45 0"></a-entity>
-            <!-- Sphere. -->
-            <a-entity geometry="primitive: sphere; radius: 1.25" material="color: #EF2D5E" position="-5 1.25 -5"></a-entity>
-            <!-- Cylinder. -->
-            <a-entity geometry="primitive: cylinder; radius: 0.5; height: 1.5" material="color: #FFC65D" position="-4 0.75 -3"></a-entity>
-          </a-entity>
+          <a-curvedimage
+            term-demo
+            class="collidable is-drag-on-cylinder"
+            material="side:back;"
+            theta-length="60"
+            radius="6"
+            height="4"
+            rotation="0 80 0"
+            position="0 3 0"
+          ></a-curvedimage>
+
+          <a-sphere
+            term-demo
+            class="collidable is-drag-on-sphere"
+            material="side:back;"
+            phi-length="60"
+            phi-start="330"
+            theta-length="40"
+            theta-start="70"
+            radius="6"
+            repeat="-1 1"
+            rotation="0 0 0"
+            position="0 0 0"
+          ></a-sphere>
+
+          <a-sphere
+            term-demo
+            class="collidable is-drag-on-sphere"
+            material="side:back;"
+            phi-length="60"
+            phi-start="330"
+            theta-length="40"
+            theta-start="70"
+            radius="3"
+            repeat="-1 1"
+            rotation="0 0 0"
+            position="0 0 0"
+          ></a-sphere>
+
+          <a-entity id="indicator" line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
+          <a-entity id="caption" text="value: Hello World;"line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
+          <!-- Box. -->
+          <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-6 0.5 -3" rotation="0 45 0"></a-entity>
+          <!-- Sphere. -->
+          <a-entity geometry="primitive: sphere; radius: 1.25" material="color: #EF2D5E" position="-5 1.25 -5"></a-entity>
+          <!-- Cylinder. -->
+          <a-entity geometry="primitive: cylinder; radius: 0.5; height: 1.5" material="color: #FFC65D" position="-4 0.75 -3"></a-entity>
         </a-entity>
       </a-scene>
     </div>

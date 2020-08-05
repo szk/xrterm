@@ -4,11 +4,11 @@ class XRTSession
 {
   constructor()
   {
-    this.terminalInstance = 0;
+    this.terminal_instance_ = 0;
   }
 
   get_term_id()
   {
-    return 'terminal-' + this.terminalInstance++;
+    return 'terminal-' + this.terminal_instance_++;
   }
 }

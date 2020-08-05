@@ -2,7 +2,9 @@
   <head>
     <meta charset='utf-8'>
     <title>xrterm pre-0</title>
+    <!-- CSS -->
     <link rel="stylesheet" href="src/lib/xterm/xterm.css" />
+    <!-- Libs -->
     <script type="text/javascript" src="src/lib/xterm/xterm.js"></script>
     <script type="text/javascript" src="src/lib/aframe/aframe-v1.0.4.min.js"></script>
     <script type="text/javascript" src="build/build.js"></script>
@@ -16,18 +18,24 @@
     <!-- Main -->
     <script type="text/javascript" src="src/common.js"></script>
     <script type="text/javascript" src="src/util.js"></script>
+
+    <script type="text/javascript" src="src/client/space/XRTSpcPlane.js"></script>
+    <script type="text/javascript" src="src/client/space/XRTSpcCylinder.js"></script>
+    <script type="text/javascript" src="src/client/space/XRTSpcSphere.js"></script>
+
     <script type="text/javascript" src="src/client/XRTInput.js"></script>
     <script type="text/javascript" src="src/client/XRTConfig.js"></script>
+    <script type="text/javascript" src="src/client/XRTCommand.js"></script>
     <script type="text/javascript" src="src/client/XRTPlacement.js"></script>
     <script type="text/javascript" src="src/client/XRTSession.js"></script>
     <script type="text/javascript" src="src/client/XRTWorkspace.js"></script>
     <script type="text/javascript" src="src/client/XRTTheme.js"></script>
-    <!-- <script type="text/javascript" src="src/client/term/index.js"></script> -->
     <script type="text/javascript" src="src/client/XRTTty.js"></script>
     <script type="text/javascript" src="src/client/XRTTermBase.js"></script>
     <script type="text/javascript" src="src/client/XRTTermDX.js"></script>
     <script type="text/javascript" src="src/client/xrterm.js"></script>
     <script type="text/javascript">
+     CM.BUILD = 'RAW';
      let xrterm = new XRTERM();
      xrterm.init();
     </script>

@@ -1,152 +1,124 @@
 "use strict";
 
-var CLAMP_VELOCITY = 0.00001;
-var MAX_DELTA = 0.2;
-
 class XRTWorkspace
 {
   constructor()
   {
-    // this.intersect_mesh = null;
-		// var geometry = new THREE.BufferGeometry();
-		// geometry.addAttribute('position',
-    //                       new THREE.BufferAttribute( new Float32Array( 4 * 3 ), 3 ) );
-		// var material = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true } );
-    // this.intersect_line = new THREE.Line( geometry, material );
+    this.input_ = new XRTInput();
 
-
-    this.input = new XRTInput();
-    this.config = new XRTConfig();
-
-    this.placement = new XRTPlacement();
-
-    this.presense = {};
-    this.velocity = new THREE.Vector3();
-    this.camera = null;
-  }
-
-  init(obj_)
-  {
-    this.easing = 1.1;
-    this.camera = document.querySelector('[camera]').object3D;
-  }
-
-  getRandomColor()
-  {
-    const letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-      color += letters[Math.floor(Math.random() * 16)];
+    switch (CM.BUILD)
+    {
+      case 'RAW': console.log("this is raw"); break;
+      case 'ELECTRON': console.log("this is electron");  break;
+      case 'DEMO': console.log("this is demo"); break;
+      default:
     }
-    return color;
+
+    this.config_ = new XRTConfig();
+    this.placement_ = new XRTPlacement();
+
+    this.presense_ = {};
+    this.camera_ = null;
+    this.cmd_queue_ = [];
+
+    this.is_pointer_active_ = true;
+    this.intersection_el_ = null;
+    this.grabbed_el_ = null;
+  }
+
+  init(self_)
+  {
+    this.easing_ = 1.1;
+    this.camera_ = document.querySelector('[camera]').object3D;
+    this.el_ = document.querySelector('[workspace]');
+
+    this.placement_.init();
+    this.el_.appendChild(this.placement_.get_base());
+
+    this.chestrig_mesh = new THREE.Mesh(new THREE.CylinderGeometry({ radiusTop : 2.0, radiusBottom : 1.5, height : 0.01,
+                                                                     radialSegments : 36, heightSegments : 1, openEnded: true, thetaStart : 1.0, thetaLength : 0.5 }),
+                                        new THREE.MeshBasicMaterial({color: 'white', side: THREE.BackSide }));
+    this.chestrig_mesh.position.set(0, 0, 0);
+    this.camera_.add(this.chestrig_mesh);
+
+    // using element system of a-frame
+    this.intersection_el_ = document.createElement('a-entity');
+    this.intersection_el_.setObject3D('mesh', new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6),
+                                                        new THREE.MeshBasicMaterial({color: 0xffff00, wireframe:false})));
+    this.el_.appendChild(this.intersection_el_);
   }
 
   tick(obj_, time_, delta_)
   {
-    let cmd_queue = this.input_to_cmd(this.input.get_state());
-    this.cmd_to_invoke(cmd_queue, obj_.el);
+    this.input_.tick();
+    for (const pressed_key in this.input_.get_pressed()) { this.key_to_cmd_(pressed_key); }
+    this.is_pointer_active_ = this.input_.get_sysstate(CM.POINTER_ACTIVE);
 
+    this.pointer_to_cmd_();
+    this.invoke_cmd_();
   }
 
   tock(obj_, time_, delta_)
   {
-    this.input.tock();
+    this.input_.tock();
   }
 
-  input_to_cmd(keys_)
+  key_to_cmd_(pressed_key_)
   {
-    let cmd_queue = [];
-    if (keys_[this.config.get_modkey()] == true)
-    {
-      if (this.input.get_pressed()['Enter'])
-      {
-        this.placement.get_faced(this.camera);
-        cmd_queue.push(CM.WS_CMD.OPEN_TERMINAL);
-      }
+    if (this.input_.get_keystate(this.config_.get_modkey()) == false) { return; }
+    let cmd_type = this.config_.key_to_cmdtype(pressed_key_);
+    if (cmd_type == null) { return; }
 
-      if (this.input.get_pressed()['Tab'])
-      {
-      }
-      if (this.input.get_released()['Tab'])
-      {
-        console.log('released' + this.input.get_released());
-      }
-    }
-
-    return cmd_queue;
+    let cmd = new XRTCommand();
+    cmd.init(cmd_type, "0 0 0");
+    this.cmd_queue_.push(cmd);
   }
 
-  cmd_to_invoke(cmd_queue_, el_)
+  pointer_to_cmd_()
   {
-    for (let cmd in cmd_queue_)
-    {
-      console.log('cmd found: ' + cmd_queue_);
-      if (cmd == CM.WS_CMD.OPEN_BROWSER)
-      {
-        console.log('open browser');
-      }
-    }
-
-    let mode = CM.WS_MODE.CONTROL;
-
-    for (let child in el_)
-    {
-      // child.el.setAttribute('material', 'color', color);
-      // console.log(child);
-    }
-
-    // console.log('pressed' + this.input.get_pressed());
-    for (let cmd in cmd_queue_)
-    {
-      // if (CM.WS_CMD.MOVE_UP)
-      // {
-      //   let color = this.getRandomColor();
-      //   el_.setAttribute('material', 'color', color);
-      //   break;
-      // }
-      if (CM.WS_CMD.OPEN_TERMINAL)
-      {
-        console.log('openterminal');
-        this.openTerminal(null);
-        break;
-      }
-    }
-
-    // Get movement vector and translate position.
-    // el.object3D.position.add(this.getMovementVector(obj_, delta_));
-
+    if (!this.is_pointer_active_) { return; }
+    this.placement_.watch(this.grabbed_el_, this.intersection_el_);
   }
 
-  openTerminal(type_)
+  invoke_cmd_()
   {
-    // console.log(this.placement.get_lookat());
-    // return;
+    for (const cmd of this.cmd_queue_)
+    {
+      console.log('cmd found: ' + cmd);
 
-    var new_el = document.createElement('a-curvedimage');
-    document.querySelector('a-scene').appendChild(new_el);
-    new_el.classList.add('terminal');
-    new_el.setAttribute('term-dx', {
+      switch (cmd.get_type()) {
+        case CM.WS_CMD.OPEN_BROWSER:
+          console.log('open browser');
+          break;
+        case CM.WS_CMD.OPEN_TERMINAL:
+          console.log(CM.BUILD);
+          console.log('openterminal' + cmd.get_argument());
+          this.open_terminal_(null, cmd.get_argument());
+          break;
+        default:
+          break;
+      }
+    }
+    this.cmd_queue_ = [];
+  }
+
+  open_terminal_(type_, pos_)
+  {
+    var new_el_ = document.createElement('a-curvedimage');
+    document.querySelector('a-scene').appendChild(new_el_);
+    new_el_.classList.add('collidable');
+    new_el_.setAttribute('term-dx', {
       'theta-length':'60',
       radius: '6',
       height: '4',
       rotation: '0 150 0',
-      position: '0 0 0',
+      position: pos_,
     });
   }
 
-  keydownevent(code_)
+  register()
   {
-    if (code_ == 'ShiftLeft')
-    {
-      this.cmd_queue.push(CM.WS_CMD.OPEN_BROWSER);
-    }
-
-    return null;
-  }
-
-  register ()
-  {
-    this.input.init(this);
+    this.input_.init(this);
     let self_ws = this; // FIXME
 
     AFRAME.registerComponent('workspace', {
@@ -161,9 +133,24 @@ class XRTWorkspace
         wsEnabled: {default: true},
         wsInverted: {default: false}
       },
-      init: function () { self_ws.init(self_ws); },
+      init: function ()
+      {
+        self_ws.init(self_ws);
+        this.el.addEventListener('raycaster-intersected', e_ => { this.raycaster = e_.detail.el; });
+        this.el.addEventListener('raycaster-intersected-cleared', e_ => { this.raycaster = null; });
+
+        this.el.addEventListener('click', e_ => {
+          if (e_.detail.intersection) { console.log('click' + e_.detail.intersection.point); }});
+        this.el.addEventListener('mousedown', e_ => {
+          if (e_.detail.intersection) { self_ws.grabbed_el_ = e_.detail.intersection.object.el; }});
+        this.el.addEventListener('mouseup', e_ => { self_ws.grabbed_el_ = null; });
+      },
       update: function() { },
-      tick: function (time_, delta_) { self_ws.tick(this, time_, delta_); },
+      tick: function (time_, delta_)
+      {
+        self_ws.tick(this, time_, delta_);
+        self_ws.pointer_(this, self_ws);
+      },
       tock: function (time_, delta_) { self_ws.tock(this, time_, delta_); },
       remove: function () { self_ws.input.finish(); },
       pause: function() {},
@@ -171,101 +158,31 @@ class XRTWorkspace
     });
   }
 
-
-}
-/*
-  tick_a(obj_, time_, delta_)
+  pointer_(self_)
   {
-    var data = obj_.data;
-    var el = obj_.el;
-    var velocity = this.velocity;
-
-    if (!velocity[data.adAxis] && !velocity[data.wsAxis] && this.isEmptyObject(this.input.keys))
-    { return; }
-
-    // Update velocity.
-    delta_ = delta_ / 1000;
-    this.updateVelocity(obj_, delta_);
-
-    if (!velocity[data.adAxis] && !velocity[data.wsAxis]) { return; }
-
-    // Get movement vector and translate position.
-    el.object3D.position.add(this.getMovementVector(obj_, delta_));
-  }
-
-  getMovementVector(obj_, delta_) {
-    var directionVector = new THREE.Vector3(0, 0, 0);
-    var rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ');
-
-    return function (delta) {
-      var rotation = obj_.el.getAttribute('rotation');
-      var velocity = this.velocity;
-      var xRotation;
-
-      directionVector.copy(velocity);
-      directionVector.multiplyScalar(delta);
-
-      // Absolute.
-      if (!rotation) { return directionVector; }
-
-      xRotation = obj_.data.fly ? rotation.x : 0;
-
-      // Transform direction relative to heading.
-      rotationEuler.set(THREE.Math.degToRad(xRotation), THREE.Math.degToRad(rotation.y), 0);
-      directionVector.applyEuler(rotationEuler);
-      return directionVector;
-    };
-  }
-
-  updateVelocity(obj_, delta_)
-  {
-    var acceleration;
-    var adAxis;
-    var adSign;
-    var data = obj_.data;
-    var keys = this.input.keys;
-    var velocity = this.velocity;
-    var wsAxis;
-    var wsSign;
-
-    adAxis = data.adAxis;
-    wsAxis = data.wsAxis;
-
-    // If FPS too low, reset velocity.
-    if (delta_ > MAX_DELTA)
+    if (!self_.raycaster || !this.is_pointer_active_)
     {
-      velocity[adAxis] = 0;
-      velocity[wsAxis] = 0;
+      this.intersection_el_.setAttribute('visible', false);
       return;
     }
 
-    // https://gamedev.stackexchange.com/questions/151383/frame-rate-independant-movement-with-acceleration
-    var scaledEasing = Math.pow(1 / this.easing, delta_ * 60);
-    // Velocity Easing.
-    if (velocity[adAxis] !== 0) {
-      velocity[adAxis] -= velocity[adAxis] * scaledEasing;
+    let intersected_el = self_.raycaster.components.raycaster.intersectedEls[0];
+    let intersection = self_.raycaster.components.raycaster.getIntersection(intersected_el);
+    if (!intersection)
+    {
+      this.intersection_el_.setAttribute('visible', false);
+      return;
     }
-    if (velocity[wsAxis] !== 0) {
-      velocity[wsAxis] -= velocity[wsAxis] * scaledEasing;
-    }
+    this.intersection_el_.setAttribute('visible', true);
+    this.intersection_el_.setAttribute('position', intersection.point);
 
-    // Clamp velocity easing.
-    if (Math.abs(velocity[adAxis]) < CLAMP_VELOCITY) { velocity[adAxis] = 0; }
-    if (Math.abs(velocity[wsAxis]) < CLAMP_VELOCITY) { velocity[wsAxis] = 0; }
-
-    if (!data.enabled) { return; }
-
-    // Update velocity using keys pressed.
-    acceleration = data.acceleration;
-    if (data.adEnabled) {
-      adSign = data.adInverted ? -1 : 1;
-      if (keys.KeyA || keys.ArrowLeft) { velocity[adAxis] -= adSign * acceleration * delta_; }
-      if (keys.KeyD || keys.ArrowRight) { velocity[adAxis] += adSign * acceleration * delta_; }
-    }
-    if (data.wsEnabled) {
-      wsSign = data.wsInverted ? -1 : 1;
-      if (keys.KeyW || keys.ArrowUp) { velocity[wsAxis] -= wsSign * acceleration * delta_; }
-      if (keys.KeyS || keys.ArrowDown) { velocity[wsAxis] += wsSign * acceleration * delta_; }
-    }
+    /* TODO
+       let lookAtTarget = new THREE.Vector3().addVectors(intersection.point, intersection.face.normal);
+       let el_quat = new THREE.Quaternion;
+       this.intersected_el_.object3D.getWorldQuaternion(el_quat);
+       self_ws.intersection_el_.object3D.lookAt(lookAtTarget);
+    */
   }
-*/
+
+
+}

@@ -1,6 +1,6 @@
 "use strict";
 
-var shouldCaptureKeyEvent = function (event) {
+var should_capture_keyevent = function (event) {
   if (event.metaKey) { return false; }
   return document.activeElement === document.body;
 };
@@ -9,107 +9,138 @@ class XRTInput
 {
   constructor()
   {
-    this.__target = null;
-    this.__state = {};
-    this.__pressed = {};
-    this.__released = {};
+    this.target_ = null;
+    this.keystate_ = {};
+    this.sysstate_ = {};
+    this.pressed_ = {};
+    this.released_ = {};
   }
 
   init(el_)
   {
-    this.__target = el_;
+    this.target_ = el_;
+
+    // Initial system state
+    this.sysstate_[CM.POINTER_ACTIVE] = true;
 
     // Bind methods and add event listeners.
-    this.__target.onBlur = bind(this.onBlur, this);
-    this.__target.onFocus = bind(this.onFocus, this);
-    this.__target.onKeyDown = bind(this.onKeyDown, this);
-    this.__target.onKeyUp = bind(this.onKeyUp, this);
-    this.__target.onVisibilityChange = bind(this.onVisibilityChange, this);
-    this.attachVisibilityEventListeners();
+    this.target_.onBlur = bind(this.on_blur_, this);
+    this.target_.onFocus = bind(this.on_focus_, this);
+    this.target_.onKeyDown = bind(this.on_key_down_, this);
+    this.target_.onKeyUp = bind(this.on_key_up_, this);
+    this.target_.onMouseOut = bind(this.on_mouse_out_, this);
+    this.target_.onMouseOver = bind(this.on_mouse_over_, this);
+    this.target_.onVisibilityChange = bind(this.on_visibility_change_, this);
+    this.add_visibility_event_listeners_();
   }
 
   finish(el_)
   {
-    this.removeKeyEventListeners();
-    this.removeVisibilityEventListeners();
+    this.remove_keyevent_listeners_();
+    this.remove_visibility_event_listeners_();
     this.clear();
   }
 
   clear()
   {
-    this.__state = {};
-    this.__pressed = {};
-    this.__released = {};
+    this.keystate_ = {};
+    this.sysstate_ = {};
+    this.pressed_ = {};
+    this.released_ = {};
+  }
+
+  tick()
+  {
   }
 
   tock()
   {
-    this.__pressed = {};
-    this.__released = {};
+    this.pressed_ = {};
+    this.released_ = {};
   }
 
-  get_state() { return this.__state; }
-  get_pressed() { return this.__pressed; }
-  get_released() { return this.__released; }
+  get_keystate(code_) { return this.keystate_[code_]; }
+  get_sysstate(code_) { return this.sysstate_[code_]; }
+  get_pressed() { return this.pressed_; }
+  get_released() { return this.released_; }
 
-  onBlur() { this.removeKeyEventListeners(); }
-  onFocus() { this.attachKeyEventListeners(); }
+  on_blur_() { this.remove_keyevent_listeners_(); }
+  on_focus_() { this.add_keyevent_listeners_(); }
 
-  onKeyDown(event_)
+  on_key_down_(event_)
   {
-    if (!shouldCaptureKeyEvent(event_)) { return; }
+    if (!should_capture_keyevent(event_)) { return; }
     let code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
 
-    if (this.__state[code] != true) { this.__pressed[code] = true; console.log(event_.code); }
-    this.__state[code] = true;
+    if (this.keystate_[code] != true) { this.pressed_[code] = true; }
+    this.keystate_[code] = true;
   }
 
-  onKeyUp(event_)
+  on_key_up_(event_)
   {
     let code = event_.code || KEYCODE_TO_CODE[event_.keyCode];
 
-    if (this.__state[code] == true) { this.__released[code] = true; }
-    delete this.__state[code];
+    if (this.keystate_[code] == true) { this.released_[code] = true; }
+    delete this.keystate_[code];
   }
 
-  onVisibilityChange()
+  on_mouse_out_(event_)
+  {
+    event_ = event_ ? event_ : window.event;
+    let from = event_.relatedTarget || event_.toElement;
+    if (!from || from.nodeName == "HTML") { this.sysstate_[CM.POINTER_ACTIVE] = false; }
+  }
+
+  on_mouse_over_(event_)
+  {
+    event_ = event_ ? event_ : window.event;
+    let to = event_.relatedTarget || event_.fromElement;
+    if (!to || to.nodeName == "HTML") { this.sysstate_[CM.POINTER_ACTIVE] = true; }
+  }
+
+  on_visibility_change_()
   {
     this.clear();
-    if (document.hidden) { this.onBlur(); }
-    else { this.onFocus(); }
+    if (document.hidden) { this.on_blur_(); }
+    else { this.on_focus_(); }
   }
 
-  attachVisibilityEventListeners()
+  add_visibility_event_listeners_()
   {
     this.clear();
-    window.addEventListener('blur', this.__target.onBlur);
-    window.addEventListener('focus', this.__target.onFocus);
-    document.addEventListener('visibilitychange', this.__target.onVisibilityChange);
+    window.addEventListener('blur', this.target_.onBlur);
+    window.addEventListener('focus', this.target_.onFocus);
+    document.addEventListener('visibilitychange', this.target_.onVisibilityChange);
   }
 
-  removeVisibilityEventListeners()
+  remove_visibility_event_listeners_()
   {
     this.clear();
-    window.removeEventListener('blur', this.__target.onBlur);
-    window.removeEventListener('focus', this.__target.onFocus);
-    document.removeEventListener('visibilitychange', this.__target.onVisibilityChange);
+    window.removeEventListener('blur', this.target_.onBlur);
+    window.removeEventListener('focus', this.target_.onFocus);
+    document.removeEventListener('visibilitychange', this.target_.onVisibilityChange);
+     console.log(".");
   }
 
-  attachKeyEventListeners()
+  add_keyevent_listeners_()
   {
     this.clear();
-    window.addEventListener('keydown', this.__target.onKeyDown);
-    window.addEventListener('keyup', this.__target.onKeyUp);
+    window.addEventListener('keydown', this.target_.onKeyDown);
+    window.addEventListener('keyup', this.target_.onKeyUp);
+    window.addEventListener('mouseout', this.target_.onMouseOut);
+    window.addEventListener('mouseover', this.target_.onMouseOver);
   }
 
-  removeKeyEventListeners()
+  remove_keyevent_listeners_()
   {
     this.clear();
-    window.removeEventListener('keydown', this.__target.onKeyDown);
-    window.removeEventListener('keyup', this.__target.onKeyUp);
+    window.removeEventListener('keydown', this.target_.onKeyDown);
+    window.removeEventListener('keyup', this.target_.onKeyUp);
+    window.removeEventListener('mouseout', this.target_.onMouseOut);
+    window.removeEventListener('mouseover', this.target_.onMouseOver);
   }
 
-  isEmptyObject(keys_)
+  is_empty_object(keys_)
   {
     for (let key in keys_) { return false; }
     return true;
