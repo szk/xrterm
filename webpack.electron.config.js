@@ -35,19 +35,13 @@ module.exports = {
       {
         test: /\.js/,
         use: [{ loader: 'babel-loader' }, { loader: 'aframe-super-hot-loader' } ],
-        exclude: /(node_modules)/,
+//        exclude: /(node_modules)/,
         include: node_modules_path
       },
       {
         test: /\.html/,
-        use: { loader: path.join(node_modules_path, 'aframe-super-hot-html-loader') },
-        exclude: /(node_modules)/,
-      },
-      {
-        test: /\.html/,
-        exclude: /(node_modules)/,
-        include: node_modules_path,
         use: [
+          'aframe-super-hot-html-loader',
           {
             loader: 'super-nunjucks-loader',
             options: {

@@ -8,7 +8,13 @@ class XRTSpcCylinder
     this.geometry_ = null;
     this.mtl_ = null;
     this.el_ = null;
+
+    this.camera_ = document.querySelector('[camera]').object3D;
+
     this.grabbed_offset_pos_ = new THREE.Vector3();
+
+    this.start_pos_ = null;
+    this.end_pos_ = null;
   }
 
   init()
@@ -17,6 +23,8 @@ class XRTSpcCylinder
     this.el_ = document.createElement('a-entity');
     this.el_.classList.add('collidable');
     this.hide();
+    this.start_pos_ = new THREE.Vector3;
+    this.end_pos_ = new THREE.Vector3;
 
     return this.el_;
   }
@@ -34,7 +42,7 @@ class XRTSpcCylinder
   start(grabbed_el_, intersection_el_)
   {
     let params = grabbed_el_.object3D.children[0].geometry.metadata.parameters;
-    console.log(params);
+    // console.log(params);
     if (params.radiusBottom && params.radiusTop) // is this a cylinder?
     {
 
@@ -60,14 +68,20 @@ class XRTSpcCylinder
     intersection_el_.object3D.getWorldPosition(intersected_pos);
     grabbed_el_.object3D.getWorldPosition(this.grabbed_offset_pos_);
     this.grabbed_offset_pos_.sub(intersected_pos);
+
+    this.start_pos_.set(intersected_pos);
+    this.start_pos_.normalize();
   }
 
   during(grabbed_el_, intersection_el_)
   {
-    let pointer_pos = new THREE.Vector3();
-    intersection_el_.object3D.getWorldPosition(pointer_pos);
-    pointer_pos.add(this.grabbed_offset_pos_);
-    grabbed_el_.setAttribute('position', pointer_pos);
+    let during_pos = new THREE.Vector3();
+    intersection_el_.object3D.getWorldPosition(during_pos);
+    grabbed_el_.setAttribute('position', {x: 0, y: during_pos.y, z:0});
+
+    let spherical = new THREE.Spherical();
+    spherical.setFromCartesianCoords(during_pos.x, during_pos.y, during_pos.z);
+    grabbed_el_.setAttribute('rotation', {x: 0, y: THREE.Math.radToDeg(spherical.theta) - 30, z:0});
   }
 
   end()

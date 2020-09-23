@@ -8,11 +8,9 @@ class XRTSpcSphere
     this.geometry_ = null;
     this.mtl_ = null;
     this.el_ = null;
-    this.grabbed_offset_pos_ = new THREE.Vector3();
 
     this.camera_ = document.querySelector('[camera]').object3D;
 
-    this.el_pos_ = null;
     this.start_pos_ = null;
     this.end_pos_ = null;
   }
@@ -25,7 +23,6 @@ class XRTSpcSphere
 
     this.hide();
 
-    this.el_pos_ = new THREE.Vector3;
     this.start_pos_ = new THREE.Vector3;
     this.end_pos_ = new THREE.Vector3;
 
@@ -51,16 +48,10 @@ class XRTSpcSphere
       this.el_.setObject3D('mesh', new THREE.Mesh(new THREE.SphereGeometry(params.radius, 8, 8),
                                                   this.mtl_));
     }
-    // CM.FUNC.copy_mtx(this.el_.object3D, grabbed_el_.object3D.matrixWorld);
     this.el_.setAttribute('position', grabbed_el_.object3D.position);
-    // this.el_.object3D.setWorldPosition(grabbed_el_.object3D.matrixWorld);
-
     let intersected_pos = new THREE.Vector3();
     intersection_el_.object3D.getWorldPosition(intersected_pos);
-    grabbed_el_.object3D.getWorldPosition(this.grabbed_offset_pos_);
-    this.grabbed_offset_pos_.sub(intersected_pos);
 
-    grabbed_el_.object3D.getWorldPosition(this.el_pos_);
     this.start_pos_.set(intersected_pos);
     this.start_pos_.normalize();
   }
@@ -69,21 +60,15 @@ class XRTSpcSphere
   {
     let during_pos = new THREE.Vector3();
     intersection_el_.object3D.getWorldPosition(during_pos);
-    // during_pos.add(this.grabbed_offset_pos_);
-    // grabbed_el_.setAttribute('position', during_pos);
 
     let spherical = new THREE.Spherical();
     spherical.setFromCartesianCoords(during_pos.x, during_pos.y, during_pos.z);
     let x = spherical.radius;
-    let y = THREE.Math.radToDeg(spherical.theta) + 45;
-    let z = THREE.Math.radToDeg(spherical.phi) * 2 - 90;
+    let y = THREE.Math.radToDeg(spherical.theta) + 90;
+    let z = THREE.Math.radToDeg(spherical.phi) - 90;
+    grabbed_el_.setAttribute('rotation', {x: 0, y: y, z:z});
 
-    y = THREE.Math.radToDeg(spherical.theta) + 90;
-    z = THREE.Math.radToDeg(spherical.phi) - 90;
-
-    let rot = new THREE.Vector3();
-    rot.set(0, y, z);
-    grabbed_el_.setAttribute('rotation', rot);
+    // Show caption
 
     let caption_obj = document.getElementById('caption');
     caption_obj.setAttribute('position', during_pos);

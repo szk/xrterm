@@ -8,6 +8,9 @@ import CM from '../../src/common.js';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+// For local app
+const host = 'localhost';
+const port = 3000;
 
 //// Run http server
 const HttpServer = require('webpack-dev-server');
@@ -15,8 +18,6 @@ const webpack = require('webpack');
 const webpackConfig = require('../../webpack.electron.config.js');
 
 const compiler = webpack(webpackConfig);
-const host = 'localhost';
-const port = 3000;
 const contentBase_path = path.join(path.dirname(process.execPath), 'resources', 'app.asar');
 const config_path = (app || remote.app).getPath('userData');
 
@@ -28,7 +29,7 @@ const dev_http_server_opts = {
   inline: true,
   disableHostCheck: false,
   host,
-  // allowedHosts: [ host ],
+  allowedHosts: [ host ],
   contentBase: contentBase_path,
 };
 
@@ -45,7 +46,7 @@ http_svr.listen(port, host, () => {
 const Store = require('./store.js');
 
 //// Run command server
-const CmdServer = require('../../src/server/XRTserver.js');
+const CmdServer = require('../../src/server/XRTServer.js');
 let cmd_svr = new CmdServer();
 cmd_svr.init();
 cmd_svr.start();
@@ -61,7 +62,7 @@ function createMainWindow() {
     window.webContents.openDevTools();
   }
 
-  window.loadURL(`http://localhost:3000`);
+  window.loadURL("http://" + host + ":" + port.toString());
   // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
   window.on('closed', () => { mainWindow = null; });
