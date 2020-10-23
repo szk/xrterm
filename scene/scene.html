@@ -1,15 +1,17 @@
 <a-scene
   environment="preset: forest; seed: 42; lightPosition: 0 2 4;">
 
-  <a-entity slice9="width: 2; height: 1; left: 20; right: 43; top: 20; bottom: 43; src: url(scene/frame.png); usingCustomMaterial:false"
-            material="depthTest: false; transparent:true;" position="0 1 -2" rotation="" scale="" visible="">
-  </a-entity>
+  <!-- <a-entity slice9="width: 2; height: 1; left: 20; right: 43; top: 20; bottom: 43; src: url(scene/frame.png); usingCustomMaterial:false"
+       material="depthTest: true; transparent: true;" position="0 1 -2" rotation="" scale="" visible="">
+       </a-entity> -->
 
   <!-- placement="rayOrigin:mouse" -->
-  <a-entity workspace raycaster="objects: .collidable" cursor="rayOrigin: mouse">
+  <a-entity id="cursor" raycaster="objects: .collidable" cursor="rayOrigin: mouse">
+    <a-entity id="keyboard" super-keyboard="hand: #cursor; imagePath:../src/lib/aframe-super-keyboard/" position="0 1.076 -0.5" rotation="-30 0 0"></a-entity>
+
     <a-plane
       term-base
-      class="collidable"
+      class="collidable is-drag-on-plane"
       height="4"
       width="6"
       rotation="-20 0 0"
@@ -18,8 +20,8 @@
     ></a-plane>
 
     <a-curvedimage
-      term-dx
-      class="collidable"
+      term-dx 
+      class="collidable is-drag-on-cylinder"
       theta-length="60"
       radius="6"
       height="4"
@@ -31,7 +33,8 @@
     <!-- Box. -->
     <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-6 0.5 -3" rotation="0 45 0"></a-entity>
     <!-- Sphere. -->
-    <a-entity geometry="primitive: sphere; radius: 1.25" material="color: #EF2D5E" position="-5 1.25 -5"></a-entity>
+    <a-entity geometry="primitive: sphere; radius: 1.25" material="shader: skyGradient" position="-5 1.25 -5"></a-entity>
+    <!-- color: #EF2D5E -->
     <!-- Cylinder. -->
     <a-entity geometry="primitive: cylinder; radius: 0.5; height: 1.5" material="color: #FFC65D" position="-4 0.75 -3"></a-entity>
   </a-entity>

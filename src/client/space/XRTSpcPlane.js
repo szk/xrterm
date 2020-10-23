@@ -17,6 +17,8 @@ class XRTSpcPlane
     this.el_.classList.add('collidable');
     this.hide();
 
+    console.log('plane');
+
     return this.el_;
   }
 
@@ -38,6 +40,8 @@ class XRTSpcPlane
     intersection_el_.object3D.getWorldPosition(intersected_pos);
     grabbed_el_.object3D.getWorldPosition(this.grabbed_offset_pos_);
     this.grabbed_offset_pos_.sub(intersected_pos);
+
+    console.log('yey');
   }
 
   during(grabbed_el_, intersection_el_)
@@ -46,6 +50,8 @@ class XRTSpcPlane
     intersection_el_.object3D.getWorldPosition(pointer_pos);
     pointer_pos.add(this.grabbed_offset_pos_);
     grabbed_el_.setAttribute('position', pointer_pos);
+
+    console.log('plane');
   }
 
   end()

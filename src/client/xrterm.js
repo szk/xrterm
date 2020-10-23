@@ -11,8 +11,6 @@ class XRTERM
   {
     let ws = new XRTWorkspace();
     ws.register();
-    // let placement = new XRTPlacement();
-    // placement.register();
     let xrtty = new XRTTty(this.session);
     xrtty.register();
     let term_base = new XRTTermBase();

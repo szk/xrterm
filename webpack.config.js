@@ -21,6 +21,8 @@ module.exports = {
   devServer: {
     disableHostCheck: false,
     hotOnly: true,
+    overlay: true,
+    // warnings: true,
     contentBase: path.join(__dirname, './')
   },
   entry: {
@@ -30,11 +32,6 @@ module.exports = {
     path: __dirname,
     filename: 'build/[name].js'
   },
-  externals: [
-    {
-      "local-node-pty": true
-    }
-  ],
   plugins: PLUGINS,
   module: {
     rules: [

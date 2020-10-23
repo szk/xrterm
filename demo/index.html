@@ -6,13 +6,15 @@
     <link rel="stylesheet" href="../src/lib/xterm/xterm.css" />
     <!-- Libs -->
     <script type="text/javascript" src="../src/lib/xterm/xterm.js"></script>
-    <script type="text/javascript" src="../src/lib/aframe/aframe-v1.0.4.min.js"></script>
+    <!-- <script type="text/javascript" src="../src/lib/aframe/aframe-v1.0.4.min.js"></script> -->
+    <script type="text/javascript" src="../src/lib/aframe/aframe-master.min.js"></script>
 
     <script type="text/javascript" src="../src/lib/aframe/aabb-collider.js"></script>
     <script type="text/javascript" src="../src/lib/aframe/grab.js"></script>
     <script type="text/javascript" src="../src/lib/aframe/aframe-event-set-component.min.js"></script>
     <!-- <script type="text/javascript" src="../src/lib/aframe-gui/aframe-gui.min.js"></script> -->
-    <!-- <script type="text/javascript" src="../src/lib/aframe-html-shader/aframe-html-shader.min.js"></script> -->
+    <script type="text/javascript" src="../src/lib/aframe-html-shader/aframe-html-shader.min.js"></script>
+    <script type="text/javascript" src="../src/lib/aframe-super-keyboard/aframe-super-keyboard.js"></script>
 
     <!-- Main -->
     <script type="text/javascript" src="../src/common.js"></script>
@@ -59,40 +61,28 @@
                 </a-entity>
            -->
         <a-entity workspace raycaster="objects: .collidable" cursor="rayOrigin: mouse">
-          <!-- <a-plane
-               term-demo
-               class="collidable is-drag-on-plane"
-               height="4"
-               width="6"
-               rotation="-20 0 0"
-               position="0 2 -4"
-               shadow
-               ></a-plane>
+          <a-entity id="keyboard" super-keyboard="hand: #cursor; imagePath:../src/lib/aframe-super-keyboard/" position="0 1.076 -0.5" rotation="-30 0 0"></a-entity>
 
-               <a-curvedimage
-               term-demo
-               class="collidable is-drag-on-cylinder"
-               material="side:back;"
-               theta-length="60"
-               radius="6"
-               height="4"
-               rotation="0 80 0"
-               position="0 3 0"
-               ></a-curvedimage>
+          <a-plane
+            term-demo
+            class="collidable is-drag-on-plane"
+            height="4"
+            width="6"
+            rotation="-20 0 0"
+            position="0 2 -4"
+            shadow
+          ></a-plane>
 
-               <a-sphere
-               term-demo
-               class="collidable is-drag-on-sphere"
-               material="side:back;"
-               phi-length="60"
-               phi-start="330"
-               theta-length="40"
-               theta-start="70"
-               radius="6"
-               repeat="-1 1"
-               rotation="0 0 0"
-               position="0 0 0"
-               ></a-sphere> -->
+          <a-curvedimage
+            term-demo
+            class="collidable is-drag-on-cylinder"
+            theta-length="60"
+            radius="6"
+            height="4"
+            rotation="0 80 0"
+            position="0 3 0"
+            shadow
+          ></a-curvedimage>
 
           <a-sphere
             term-demo
@@ -109,7 +99,7 @@
           ></a-sphere>
 
           <a-entity id="indicator" line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
-          <a-entity id="caption" text="value: Hello World;"line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
+          <a-entity id="caption" text="value: Hello World;" line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
           <!-- Box. -->
           <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-6 0.5 -3" rotation="0 45 0"></a-entity>
           <!-- Sphere. -->

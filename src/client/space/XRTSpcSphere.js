@@ -72,7 +72,7 @@ class XRTSpcSphere
 
     let caption_obj = document.getElementById('caption');
     caption_obj.setAttribute('position', during_pos);
-    document.getElementById('caption').setAttribute('text', {value: '[' + x.toFixed(2) + ', ' + y.toFixed(2) + ',' + z.toFixed(2) + ']'});
+    caption_obj.setAttribute('text', {value: '[' + x.toFixed(2) + ', ' + y.toFixed(2) + ',' + z.toFixed(2) + ']'});
     caption_obj.setAttribute('scale', '5 5 5');
     CM.FUNC.billboard(caption_obj.object3D, this.camera_);
     caption_obj.setAttribute('translation', '0 1 0');

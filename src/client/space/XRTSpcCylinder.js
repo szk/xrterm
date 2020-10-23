@@ -26,6 +26,8 @@ class XRTSpcCylinder
     this.start_pos_ = new THREE.Vector3;
     this.end_pos_ = new THREE.Vector3;
 
+    console.log('cylinder');
+
     return this.el_;
   }
 

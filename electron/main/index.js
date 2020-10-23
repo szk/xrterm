@@ -39,7 +39,7 @@ const http_svr = new HttpServer(compiler, dev_http_server_opts);
 http_svr.listen(port, host, () => {
   console.log('webpack server start.');
   // User Data
-  const configDir =  (app || remote.app).getPath('userData');
+  const configDir = (app || remote.app).getPath('userData');
 });
 
 //// Store scene data and user data

@@ -35,7 +35,6 @@ module.exports = {
       {
         test: /\.js/,
         use: [{ loader: 'babel-loader' }, { loader: 'aframe-super-hot-loader' } ],
-//        exclude: /(node_modules)/,
         include: node_modules_path
       },
       {

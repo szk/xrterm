@@ -5,13 +5,23 @@ class XRTConfig
   constructor()
   {
     // this.config = require("config");
-
   }
 
   get_modkey()
   {
     return 'ControlLeft';
   }
+
+  get_focus()
+  {
+    // hover gazing or click
+  }
+
+  get_move()
+  {
+    // grab & headmove or click & drag
+  }
+
 
   key_to_cmdtype(pressed_)
   {

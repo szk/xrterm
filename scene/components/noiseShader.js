@@ -4,8 +4,6 @@ AFRAME.registerShader('noise', {
     color: {type: 'color', is: 'uniform', default: 'red'},
     weight: {type: 'number', default: 1.0, is: 'uniform'}
   },
-
-  // vertexShader: require('./shaders/noise.vert.glsl'),
-
-  // fragmentShader: require('./shaders/noise.frag.glsl')
+  vertexShader: require('./shaders/noise.vert.glsl'),
+  fragmentShader: require('./shaders/noise.frag.glsl')
 });

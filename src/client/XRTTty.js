@@ -41,17 +41,6 @@ class XRTTty
     obj_.term = term;
     term.open(terminalElement);
 
-
-
-
-    // var screen = new XRTScreen();
-    // screen.activate(term);
-
-    // this.canvas = document.createElement('canvas');
-    // this.canvas.width = 4096;
-    // this.canvas.height = 2048;
-    // this.ctx = this.canvas.getContext('2d');
-
     obj_.canvas = terminalElement.querySelector('.xterm-text-layer');
     obj_.canvas.id = this.session.get_term_id();
     obj_.canvasContext = obj_.canvas.getContext('2d');
@@ -62,7 +51,9 @@ class XRTTty
 
     term.onRender((o_) => { this.redraw(obj_); });
     term.onData((data_) => { obj_.el.emit('xrtty-data', data_); });
-    obj_.el.addEventListener('click', () => { term.focus(); });
+
+    // event listener
+    obj_.el.addEventListener('click', () => { term.focus(); console.log('focused on '); });
   }
 
   write(self_, message_) { self_.term.write(message_); }

@@ -1,11 +1,11 @@
 # xrterm
-Terminal Emulator for xR environment.
+Terminal Emulator for xR environment.  
 **IMPORTANT: Early version, this is not playable so much **
 
 ## Quick instruction
 ### Starting
-1. Install Node.js and NPM.
-1. If you don't have OS-native build system, please install it. ('https://github.com/felixrieseberg/windows-build-tools', )
+1. Install Node.js, NPM and Yarn.
+1. If you don't have OS-native build system, please install it (like 'https://github.com/felixrieseberg/windows-build-tools' ).
 1. Clone master branch 
     <!-- language: sh -->
         $ git clone https://github.com/szk/xrterm.git
@@ -14,10 +14,10 @@ Terminal Emulator for xR environment.
 1. Type from command prompt:
     <!-- language: sh -->
         $ cd xrterm
-        $ npm install
-        $ npm start
+        $ yarn install
+        $ yarn start
 
-1. Access ```http://localhost:8080/``` with web browser (Edge 11+, Firefox 68+, Chrome for Android 75+).
+1. Access ```http://localhost:8000/``` with Web browser (Edge 79+, Chrome 79+, Chrome for Android 85+ and Opera 66+).
 
 ## License
 [MIT License](http://opensource.org/licenses/MIT)

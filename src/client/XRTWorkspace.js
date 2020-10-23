@@ -1,5 +1,10 @@
 "use strict";
 
+const RIG_ANIMATION_FADEIN = "property: material.opacity; from: 0; to: 1; dur: 100; easing: linear; loop: false";
+const RIG_ANIMATION_FADEOUT = "property: material.opacity; from: 1; to: 0; dur: 100; easing: linear; loop: false";
+const RIGINFO_ANIMATION_FADEIN = "property: opacity; from: 0; to: 1; dur: 100; easing: linear; loop: false";
+const RIGINFO_ANIMATION_FADEOUT = "property: opacity; from: 1; to: 0; dur: 100; easing: linear; loop: false";
+
 class XRTWorkspace
 {
   constructor()
@@ -24,38 +29,63 @@ class XRTWorkspace
     this.is_pointer_active_ = true;
     this.intersection_el_ = null;
     this.grabbed_el_ = null;
+
+    this.rig_el_ = null;
+    this.riginfo_el_ = null;
+    this.riginfo_els_ = null;
+    this.is_mod_on = false;
   }
 
   init(self_)
   {
     this.easing_ = 1.1;
     this.camera_ = document.querySelector('[camera]').object3D;
+    this.camera_el_ = document.querySelector('[camera]');
     this.el_ = document.querySelector('[workspace]');
 
     this.placement_.init();
     this.el_.appendChild(this.placement_.get_base());
 
-    this.chestrig_mesh = new THREE.Mesh(new THREE.CylinderGeometry({ radiusTop : 2.0, radiusBottom : 1.5, height : 0.01,
-                                                                     radialSegments : 36, heightSegments : 1, openEnded: true, thetaStart : 1.0, thetaLength : 0.5 }),
-                                        new THREE.MeshBasicMaterial({color: 'white', side: THREE.BackSide }));
-    this.chestrig_mesh.position.set(0, 0, 0);
-    this.camera_.add(this.chestrig_mesh);
+    this.init_rig_();
 
     // using element system of a-frame
     this.intersection_el_ = document.createElement('a-entity');
     this.intersection_el_.setObject3D('mesh', new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6),
-                                                        new THREE.MeshBasicMaterial({color: 0xffff00, wireframe:false})));
+                                                        new THREE.MeshBasicMaterial({color: '#FFF', wireframe:false})));
     this.el_.appendChild(this.intersection_el_);
   }
 
   tick(obj_, time_, delta_)
   {
     this.input_.tick();
+
+    // show rig
+    if (this.is_mod_on == false && this.input_.get_keystate(this.config_.get_modkey()) == true) // pressed
+    {
+      this.is_mod_on = true;
+      this.rig_el_.setAttribute("animation", RIG_ANIMATION_FADEIN);
+      this.rig_el_.setAttribute("animation__2", "property: material.color; from: #F0F; to: #00F;");
+      for (let info of this.riginfo_els_)
+      { info.setAttribute("animation", RIGINFO_ANIMATION_FADEIN); }
+    }
+    else if (this.input_.get_keystate(this.config_.get_modkey()) != true && this.is_mod_on == true) // released
+    {
+      this.is_mod_on = false;
+      this.rig_el_.setAttribute("animation", RIG_ANIMATION_FADEOUT);
+      this.rig_el_.setAttribute("animation__2", "property: material.color; from: #F0F; to: #00F;");
+
+
+      for (let info of this.riginfo_els_)
+      { info.setAttribute("animation",  RIGINFO_ANIMATION_FADEOUT); }
+    }
+
     for (const pressed_key in this.input_.get_pressed()) { this.key_to_cmd_(pressed_key); }
     this.is_pointer_active_ = this.input_.get_sysstate(CM.POINTER_ACTIVE);
 
     this.pointer_to_cmd_();
     this.invoke_cmd_();
+
+
   }
 
   tock(obj_, time_, delta_)
@@ -63,9 +93,39 @@ class XRTWorkspace
     this.input_.tock();
   }
 
+  init_rig_()
+  {
+    this.rig_el_ = document.createElement('a-entity');
+    this.rig_el_.setObject3D('mesh', new THREE.Mesh(new THREE.ConeBufferGeometry(0.5, -0.5, 9, 1, true),
+                                                    new THREE.MeshBasicMaterial({color: 'skyblue', opacity: 0, side: THREE.FrontSide,
+                                                                                 transparent: true })));
+    // this.rig_el_.object3D.position.set(0, 1.5, 0);
+    this.rig_el_.object3D.position.set(0, -0.4, 0);
+    this.riginfo_els_ = [];
+    for (let info of CM.RIG_INFO)
+    {
+      let riginfo_el = document.createElement("a-text");
+      riginfo_el.setAttribute("opacity", 0);
+      riginfo_el.setAttribute("value", info.text);
+      riginfo_el.setAttribute("width", info.width);
+      riginfo_el.setAttribute("align", "center");
+      riginfo_el.object3D.position.set(0, 0.23, 0);
+      riginfo_el.object3D.rotation.set(0, info.angle, 0);
+      riginfo_el.object3D.translateZ(-0.4);
+      this.rig_el_.appendChild(riginfo_el);
+      this.riginfo_els_.push(riginfo_el);
+    }
+    // this.el_.appendChild(this.rig_el_);
+    this.camera_el_.appendChild(this.rig_el_);
+  }
+
   key_to_cmd_(pressed_key_)
   {
-    if (this.input_.get_keystate(this.config_.get_modkey()) == false) { return; }
+    if (this.input_.get_keystate(this.config_.get_modkey()) == false)
+    {
+      return;
+    }
+
     let cmd_type = this.config_.key_to_cmdtype(pressed_key_);
     if (cmd_type == null) { return; }
 
@@ -84,14 +144,13 @@ class XRTWorkspace
   {
     for (const cmd of this.cmd_queue_)
     {
-      console.log('cmd found: ' + cmd);
+      console.log('cmd found: ' + cmd.get_type());
 
       switch (cmd.get_type()) {
         case CM.WS_CMD.OPEN_BROWSER:
           console.log('open browser');
           break;
         case CM.WS_CMD.OPEN_TERMINAL:
-          console.log(CM.BUILD);
           console.log('openterminal' + cmd.get_argument());
           this.open_terminal_(null, cmd.get_argument());
           break;
@@ -135,7 +194,9 @@ class XRTWorkspace
       },
       init: function ()
       {
+        console.log(this.data.hoge);
         self_ws.init(self_ws);
+
         this.el.addEventListener('raycaster-intersected', e_ => { this.raycaster = e_.detail.el; });
         this.el.addEventListener('raycaster-intersected-cleared', e_ => { this.raycaster = null; });
 

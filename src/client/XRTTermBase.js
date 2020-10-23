@@ -20,18 +20,11 @@ class XRTTermBase
     const socket = new WebSocket('ws://localhost:' + String(CM.COMM_PORT)+ '/');
 
     // Listen on data, write it to the terminal
-    socket.onmessage = ({data}) => {
-      tty.write(data);
-    };
-
-    socket.onclose = () => {
-      tty.write('\r\nConnection closed.\r\n');
-    };
+    socket.onmessage = ({data}) => { tty.write(data); };
+    socket.onclose = () => { tty.write('\r\nConnection closed.\r\n'); };
 
     // Listen on user input, send it to the connection
-    self_.el.addEventListener('xrtty-data', ({detail}) => {
-      socket.send(detail);
-    });
+    self_.el.addEventListener('xrtty-data', ({detail}) => { socket.send(detail); });
   }
 
   register ()
