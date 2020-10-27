@@ -20,20 +20,22 @@
     <script type="text/javascript" src="../src/common.js"></script>
     <script type="text/javascript" src="../src/util.js"></script>
 
-    <script type="text/javascript" src="../src/client/space/XRTSpcPlane.js"></script>
-    <script type="text/javascript" src="../src/client/space/XRTSpcCylinder.js"></script>
-    <script type="text/javascript" src="../src/client/space/XRTSpcSphere.js"></script>
-
     <script type="text/javascript" src="../src/client/XRTInput.js"></script>
     <script type="text/javascript" src="../src/client/XRTConfig.js"></script>
     <script type="text/javascript" src="../src/client/XRTCommand.js"></script>
-    <script type="text/javascript" src="../src/client/XRTPlacement.js"></script>
+
+    <script type="text/javascript" src="../src/client/workspace/XRTSpcPlane.js"></script>
+    <script type="text/javascript" src="../src/client/workspace/XRTSpcCylinder.js"></script>
+    <script type="text/javascript" src="../src/client/workspace/XRTSpcSphere.js"></script>
+    <script type="text/javascript" src="../src/client/workspace/XRTPlacement.js"></script>
+    <script type="text/javascript" src="../src/client/workspace/XRTRig.js"></script>
+    <script type="text/javascript" src="../src/client/workspace/XRTWorkspace.js"></script>
+
     <script type="text/javascript" src="../src/client/XRTSession.js"></script>
-    <script type="text/javascript" src="../src/client/XRTWorkspace.js"></script>
     <script type="text/javascript" src="../src/client/XRTTheme.js"></script>
-    <script type="text/javascript" src="../src/client/XRTTty.js"></script>
-    <script type="text/javascript" src="../src/client/XRTTermBase.js"></script>
-    <script type="text/javascript" src="../src/client/XRTTermDX.js"></script>
+    <script type="text/javascript" src="../src/client/term/XRTTty.js"></script>
+    <script type="text/javascript" src="../src/client/term/XRTTermBase.js"></script>
+    <script type="text/javascript" src="../src/client/term/XRTTermDX.js"></script>
 
     <!-- Components for scene-->
     <script type="text/javascript" src="../scene/components/environment.js"></script>
@@ -42,7 +44,7 @@
     <script type="text/javascript" src="./lib/aframe-slice9-component.js"></script>
     <script type="text/javascript" src="./lib/bash-emulator.min.js"></script>
     <script type="text/javascript" src="./lib/local-echo.min.js"></script>
-    <script type="text/javascript" src="../src/client/XRTTermDemo.js"></script>
+    <script type="text/javascript" src="../src/client/term/XRTTermDemo.js"></script>
     <script type="text/javascript" src="./demo.js"></script>
 
     <script type="text/javascript">
@@ -53,15 +55,17 @@
   </head>
   <body>
     <div id="app">
-      <a-scene
-        environment="preset: forest; seed: 42; lightPosition: 0 2 4;">
+      <a-scene environment="preset: forest; seed: 42; lightPosition: 0 2 4; shadow: true;">
         <!-- <a-assets><img id="my-texture" src="scene/tooltip.png"></a-assets>
         --><!-- <a-entity slice9="width: 2; height: 1; left: 20; right: 43; top: 20; bottom: 43; src: url(scene/tooltip.png);"
                 material="src: url(img/frame.png)" position="0 1 -2" rotation="" scale="" visible="">
                 </a-entity>
            -->
-        <a-entity workspace raycaster="objects: .collidable" cursor="rayOrigin: mouse">
-          <a-entity id="keyboard" super-keyboard="hand: #cursor; imagePath:../src/lib/aframe-super-keyboard/" position="0 1.076 -0.5" rotation="-30 0 0"></a-entity>
+        <!-- <a-entity id="user" camera look-controls wasd-controls="acceleration:10" position="0 1.6 0"></a-entity> -->
+        <a-entity workspace raycaster="objects: .collidable; showLine: false;" >
+          <!-- <a-entity workspace raycaster="objects: .collidable;" cursor="rayOrigin: mouse"> -->
+          <!-- <a-entity id="keyboard" super-keyboard="hand: #cursor; imagePath:../src/lib/aframe-super-keyboard/" position="0 1.076 -0.5" rotation="-30 0 0"></a-entity> -->
+
 
           <a-plane
             term-demo
@@ -72,7 +76,6 @@
             position="0 2 -4"
             shadow
           ></a-plane>
-
           <a-curvedimage
             term-demo
             class="collidable is-drag-on-cylinder"
@@ -98,8 +101,6 @@
             position="0 0 0"
           ></a-sphere>
 
-          <a-entity id="indicator" line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
-          <a-entity id="caption" text="value: Hello World;" line="start: -2, 4, 5; end: 0 4 -3; color: red"></a-entity>
           <!-- Box. -->
           <a-entity geometry="primitive: box" material="color: #4CC3D9" position="-6 0.5 -3" rotation="0 45 0"></a-entity>
           <!-- Sphere. -->

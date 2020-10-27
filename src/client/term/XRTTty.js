@@ -54,6 +54,7 @@ class XRTTty
 
     // event listener
     obj_.el.addEventListener('click', () => { term.focus(); console.log('focused on '); });
+    obj_.el.addEventListener('raycaster-intersected', () => { term.focus(); console.log('intersected'); });
   }
 
   write(self_, message_) { self_.term.write(message_); }

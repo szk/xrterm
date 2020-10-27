@@ -9,15 +9,13 @@ class XRTSpcSphere
     this.mtl_ = null;
     this.el_ = null;
 
-    this.camera_ = document.querySelector('[camera]').object3D;
-
     this.start_pos_ = null;
     this.end_pos_ = null;
   }
 
   init()
   {
-    this.mtl_ = new THREE.MeshBasicMaterial({color: 0xffff00, wireframe:true, side:THREE.BackSide });
+    this.mtl_ = new THREE.MeshBasicMaterial({color: '#0f0', wireframe:true, side:THREE.BackSide });
     this.el_ = document.createElement('a-entity');
     this.el_.classList.add('collidable');
 
@@ -53,7 +51,7 @@ class XRTSpcSphere
     intersection_el_.object3D.getWorldPosition(intersected_pos);
 
     this.start_pos_.set(intersected_pos);
-    this.start_pos_.normalize();
+    // this.start_pos_.normalize();
   }
 
   during(grabbed_el_, intersection_el_)
@@ -67,15 +65,6 @@ class XRTSpcSphere
     let y = THREE.Math.radToDeg(spherical.theta) + 90;
     let z = THREE.Math.radToDeg(spherical.phi) - 90;
     grabbed_el_.setAttribute('rotation', {x: 0, y: y, z:z});
-
-    // Show caption
-
-    let caption_obj = document.getElementById('caption');
-    caption_obj.setAttribute('position', during_pos);
-    caption_obj.setAttribute('text', {value: '[' + x.toFixed(2) + ', ' + y.toFixed(2) + ',' + z.toFixed(2) + ']'});
-    caption_obj.setAttribute('scale', '5 5 5');
-    CM.FUNC.billboard(caption_obj.object3D, this.camera_);
-    caption_obj.setAttribute('translation', '0 1 0');
   }
 
   end()

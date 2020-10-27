@@ -25,7 +25,7 @@ class XRTConfig
 
   key_to_cmdtype(pressed_)
   {
-    console.log(pressed_);
+    console.log(pressed_ + ': cmd');
     if (pressed_ == 'Enter') { return CM.WS_CMD.OPEN_TERMINAL; }
     if (pressed_ == 'Tab') { return CM.WS_CMD.OPEN_BROWSER; }
 

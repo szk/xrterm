@@ -1,3 +1,7 @@
+/*
+ * based on aframe-xterm-component by rangermauve
+ * MIT license
+ */
 "use strict";
 
 class XRTTermDemo

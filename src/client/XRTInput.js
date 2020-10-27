@@ -32,6 +32,7 @@ class XRTInput
     this.target_.onMouseOver = bind(this.on_mouse_over_, this);
     this.target_.onVisibilityChange = bind(this.on_visibility_change_, this);
     this.add_visibility_event_listeners_();
+    this.on_focus_();
   }
 
   finish(el_)
@@ -119,7 +120,6 @@ class XRTInput
     window.removeEventListener('blur', this.target_.onBlur);
     window.removeEventListener('focus', this.target_.onFocus);
     document.removeEventListener('visibilitychange', this.target_.onVisibilityChange);
-     console.log(".");
   }
 
   add_keyevent_listeners_()

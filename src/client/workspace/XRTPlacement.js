@@ -1,5 +1,8 @@
 "use strict";
 
+const GRAB_START_OPAC = "property: opacity; dur: 200; from: 1; to: 1";
+const GRAB_FINISH_OPAC = "property: opacity; dur: 200; from: 1; to: 1";
+
 class XRTPlacement
 {
   constructor()
@@ -27,7 +30,6 @@ class XRTPlacement
       this.space_[spc_i.get_classname()] = spc_i;
       this.el_.appendChild(spc_i.get_base());
     }
-
 
     this.hide();
   }
@@ -65,6 +67,7 @@ class XRTPlacement
       let pre_space = this.space_[CM.FUNC.get_prefixed_name(this.grabbed_pre_el_.classList, 'is-drag-on-')];
       if (pre_space) { pre_space.end(); }
       this.grabbed_pre_el_.classList.add('collidable');
+
       return;
     }
     else { return; }
@@ -75,6 +78,7 @@ class XRTPlacement
       current_space_el.setAttribute('visible', true);
       current_space_el.classList.add('collidable');
       this.grabbed_el_.classList.remove('collidable');
+
       current_space.start(this.grabbed_el_, this.intersection_el_);
       return;
     }
