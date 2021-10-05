@@ -4,12 +4,11 @@
   "description": "Terminal Emulator for xR environment",
   "scripts": {
     "dev": "echo \"Error: no dev mode specified\" && exit 1",
-    "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder",
+    "dist": "electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon ./src/server/run.js",
-    "client": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 8000 --disableHostCheck=true",
+    "client": "webpack-dev-server --host 0.0.0.0 --hot --progress --port 8000 ",
     "client-ssl": "echo \"Error: SSL mode is not available; webpack-dev-server --https --host 0.0.0.0 --progress --colors --hot-only --inline --port 8443 --disableHostCheck=true\"",
     "start": "concurrently --kill-others \"npm run server\" \"npm run client\"",
     "start-ssl": "echo \"Error: SSL mode is not available; concurrently --kill-others \"npm run server\" \"npm run client-ssl\"\""
@@ -34,54 +33,48 @@
   },
   "homepage": "https://xrterm.com/",
   "dependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/preset-env": "^7.10.2",
-    "aframe-super-hot-html-loader": "^2.1.0",
-    "aframe-super-hot-loader": "^1.6.0",
-    "babel-loader": "^8.1.0",
-    "bufferutil": "^4.0.1",
-    "chokidar": "^3.4.0",
-    "concurrently": "^5.2.0",
-    "config": "^3.3.1",
-    "diff-dom": "^4.1.6",
-    "electron-webpack": "^2.8.2",
-    "fs-jetpack": "^2.4.0",
-    "html-loader": "^1.1.0",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "babel-loader": "^8.2.2",
+    "bufferutil": "^4.0.4",
+    "concurrently": "^6.3.0",
+    "config": "^3.3.6",
+    "diff-dom": "^4.2.2",
+    "fs-jetpack": "^4.2.0",
     "html-require-loader": "^1.0.1",
     "ncp": "^2.0.0",
-    "node-pty": "^0.9.0",
-    "nodemon": "^2.0.4",
-    "rollup": "<2.0.0",
-    "source-map-support": "^0.5.19",
-    "super-nunjucks-loader": "^2.0.0",
-    "utf-8-validate": "^5.0.2",
-    "webpack": "^4.43.0",
-    "webpack-dev-server": "^3.11.0",
-    "webpack-glsl-loader": "^1.0.1"
+    "node-pty": "^0.10.1",
+    "nodemon": "^2.0.13",
+    "nunjucks": "^3.2.3",
+    "source-map-support": "^0.5.20",
+    "utf-8-validate": "^5.0.6",
+    "webpack": "^5.56.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.3.0",
   },
   "devDependencies": {
-    "electron": "^9.0.0",
-    "electron-builder": "^22.4.1",
-    "electron-webpack": "^2.8.2",
-    "node-gyp": "^7.0.0",
-    "typescript": "^3.8.3",
-    "yarn": "^1.22.5"
+    "@types/node": "^16.10.2",
+    "electron": "^15.1.0",
+    "electron-builder": "^22.11.7",
+    "node-gyp": "^8.2.0",
+    "typescript": "^4.4.3",
+    "yarn": "^1.22.15"
   },
   "build": {
+    "appId": "com.xrterm.prototype",
+    "mac": {
+      "target": "dmg"
+    },
+    "directories": {
+      "buildResources": "build"
+    },
     "nodeGypRebuild": false,
     "asar": true,
     "files": [
       "index.html",
+      "electron/index.js",
       "src/**/*",
       "scene/**/*"
     ]
-  },
-  "electronWebpack": {
-    "main": {
-      "sourceDirectory": "electron/main"
-    },
-    "renderer": {
-      "sourceDirectory": null
-    }
   }
 }

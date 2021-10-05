@@ -9,7 +9,7 @@ class XRTConfig
 
   get_modkey()
   {
-    return 'ControlLeft';
+    return 'MetaLeft';
   }
 
   get_focus()

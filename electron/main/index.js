@@ -4,7 +4,7 @@ import { app, remote, BrowserWindow } from 'electron';
 import * as path from 'path';
 import fs from 'fs';
 import { format as formatUrl } from 'url';
-import CM from '../../src/common.js';
+import CM from '../../src/Common.js';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 

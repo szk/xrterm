@@ -1,4 +1,4 @@
 AFRAME.registerShader('my-shader', {
-  vertexShader: require('./shaders/vertex.glsl'),
-  fragmentShader: require('./shaders/fragment.glsl')
+  vertexShader: require('./shaders/example_vertex_shader.glsl'),
+  fragmentShader: require('./shaders/example_fragment_shader.glsl')
 });

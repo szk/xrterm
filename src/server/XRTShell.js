@@ -7,7 +7,7 @@ const os = require('os');
 const pty = require('node-pty');
 const path = require('path');
 
-const cm = require('../common.js');
+const cm = require('../Common.js');
 
 class XRTShell
 {

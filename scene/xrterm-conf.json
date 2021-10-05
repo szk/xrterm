@@ -1,0 +1,111 @@
+{
+  "version": "0.0",
+  "comment": "placeholder",
+  "focus": {
+    "new": true,
+    "last": true,
+    "raise": true,
+    "gaze": {
+      "follow": true,
+      "delay": 500
+    }
+  },
+  "placement": {
+    "type": "smart",
+    "center": true,
+
+    "movement": {
+      "type": "grid",
+      "force": false,
+      "distance": 0.5
+    }
+  },
+  "resize": {
+    "type": "smart",
+    "content": "stretch",
+    "info": {
+      "show": true,
+      "position": "center"
+    },
+    "movement": {
+      "type": "grid",
+      "force": false,
+      "distance": 0.5
+    }
+
+  },
+  "rig": {
+    "color": {
+      "normal": "blue",
+      "highlight": "green"
+    }
+  },
+  "keybind": {
+    "context": {
+      "standby": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      },
+      "on_rig": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      },
+      "on_entity": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      }
+    }
+  },
+  "eyebind": {
+    "time": 500,
+    "long": "resize",
+    "context": {
+      "icon": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      },
+      "terminal": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      },
+      "root": {
+        "ctrl": "rig",
+        "w": "forward",
+        "a": "left_strafe",
+        "s": "back",
+        "d": "right_strafe"
+      }
+    }
+  },
+  "workspace": {
+    "number": "0",
+    "name": ["one", "two", "three"],
+    "select": {
+      "popup": false,
+      "popup_time": 500
+    }
+  },
+  "rig": {
+    "center": ["one", "two", "three"],
+    "right": ["one", "two", "three"],
+    "left": ["one", "two", "three"]
+  },
+  "theme": {
+    "a": true
+  }
+}

@@ -15,6 +15,8 @@ class XRTERM
     xrtty.register();
     let term_base = new XRTTermBase();
     term_base.register();
+    let term_bare = new XRTTermBare(ws);
+    term_bare.register();
     let term_dx = new XRTTermDX();
     term_dx.register();
   }

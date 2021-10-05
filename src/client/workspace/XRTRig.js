@@ -48,7 +48,7 @@ class XRTRig
     // using element system of a-frame
     this.isection_el_ = document.createElement('a-entity');
     this.isection_el_.setObject3D('mesh', new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6),
-                                                             new THREE.MeshBasicMaterial({color: '#0FF', wireframe:false})));
+                                                         new THREE.MeshBasicMaterial({color: '#0FF', wireframe:false})));
   }
 
   tick(self_ws_, input_, config_, camera_)

@@ -1,5 +1,5 @@
 "use strict";
-const cm = require('../common.js');
+const cm = require('../Common.js');
 const XRTShell = require('./XRTShell.js');
 
 class XRTServer

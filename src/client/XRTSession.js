@@ -7,6 +7,10 @@ class XRTSession
     this.terminal_instance_ = 0;
   }
 
+  init()
+  {
+  }
+
   get_term_id()
   {
     return 'terminal-' + this.terminal_instance_++;

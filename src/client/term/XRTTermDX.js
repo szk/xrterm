@@ -28,6 +28,10 @@ class XRTTermDX
 
     // Listen on user input, send it to the connection
     self_.el.addEventListener('xrtty-data', ({detail}) => { socket.send(detail); });
+
+    // console.log({WebglAddon});
+    // const webgladdon = {WebglAddon};
+    // tty.term.loadAddon(webgladdon);
   }
 
   register()

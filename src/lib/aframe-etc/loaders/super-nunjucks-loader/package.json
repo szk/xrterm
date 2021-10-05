@@ -1,0 +1,24 @@
+{
+  "name": "super-nunjucks-loader",
+  "version": "2.0.0",
+  "description": "Nunjucks loader for Webpack.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngokevin/super-nunjucks-loader.git"
+  },
+  "author": "Kevin Ngo <kevin@supermedium.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ngokevin/super-nunjucks-loader/issues"
+  },
+  "homepage": "https://github.com/ngokevin/super-nunjucks-loader#readme",
+  "dependencies": {
+    "loader-utils": "^1.2.3",
+    "nunjucks": "^3.1.7"
+  },
+  "devDependencies": {
+    "memory-fs": "^0.4.1",
+    "webpack": "^4.29.5"
+  }
+}

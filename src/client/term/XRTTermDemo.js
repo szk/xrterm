@@ -1,32 +1,61 @@
-/*
- * based on aframe-xterm-component by rangermauve
- * MIT license
- */
 "use strict";
 
 class XRTTermDemo
 {
-  constructor ()
+  constructor(ws_)
   {
+    this.ws_ = ws_;
+  }
+
+  init_gl()
+  {
+    this.gl_ = this.ws_.get_context();
   }
 
   init(self_)
   {
-    let tty = self_.el.components['xrtty'];
+    self_.tty = self_.el.components['xrtty'];
     const bash = this.init_bash_emulator_();
+
+    console.log(self_.tty);
 
     self_.el.addEventListener('xrtty-data', (e_) => { this.interaction_(self_, e_); });
 
-    const localEcho = new LocalEchoController();
-    tty.term.loadAddon(localEcho);
+    let localEcho = new LocalEchoController();
+    self_.tty.term.loadAddon(localEcho);
     localEcho.addAutocompleteHandler((index, tokens) => {
       if (index == 0) { return Object.keys(bash.commands); }
       return [];
     });
 
-    tty.command = '';
-    tty.write(CM.DEMO_BANNER);
-    this.repl_(localEcho, bash, tty);
+    self_.tty.command = '';
+    self_.tty.write(CM.DEMO_BANNER);
+    this.repl_(localEcho, bash, self_.tty);
+
+    self_.aframeaddon = new AframeAddon(this.gl_);
+    self_.tty.term.loadAddon(self_.aframeaddon);
+  }
+
+  show(self_, color_)
+  {
+    self_.canvas_texture = new THREE.CanvasTexture(self_.aframeaddon.textureAtlas);
+    self_.canvas_texture.needsUpdate = true;
+
+    let glyph_geometry = self_.aframeaddon.bufferGeometry;
+
+    var mesh = new THREE.Mesh(// new THREE.PlaneGeometry(6, 6, 8, 8),
+      glyph_geometry,
+      new THREE.MeshBasicMaterial({map: self_.canvas_texture,
+                                   color: color_, transparent: true}));
+    let radius = 3.0;
+    mesh.geometry.boundingSphere = new THREE.Sphere( new THREE.Vector3(0, 0, 0), radius );
+
+    self_.el.setObject3D('mesh', mesh);
+  }
+
+  connect(self_)
+  {
+
   }
 
   repl_(echo_, bash_, tty_)
@@ -40,10 +69,11 @@ class XRTTermDemo
   interaction_(self_, event_)
   {
     let command = CM.Config.key_to_cmd_term(event_.detail);
-    let tty = self_.el.components['xrtty'];
-    let rows = tty.term.rows, cols = tty.term.cols;
+    let rows = self_.tty.term.rows, cols = self_.tty.term.cols;
     let pos_wld = new THREE.Vector3();
     self_.el.object3D.getWorldPosition(pos_wld);
+
+    console.log(command, ': ', self_.tty.el.id);
 
     switch (command) {
       case CM.WS_CMD.MOVE_UP:
@@ -120,7 +150,33 @@ class XRTTermDemo
 
     AFRAME.registerComponent('term-demo', {
       dependencies: ['xrtty'],
-      init: function() { self_.init(this); }
+      schema: { color: { default: '#ff00ff' } },
+      init: function ()
+      {
+        this.initialized_ = false;
+      },
+      tick: function (time_, delta_)
+      {
+        if (this.initialized_ != false)
+        {
+          this.aframeaddon.tick();
+          this.canvas_texture.needsUpdate = true;
+        }
+        else
+        {
+          self_.init_gl(this);
+
+          self_.init(this);
+          self_.show(this, this.data.color);
+          self_.connect(this);
+
+          this.initialized_ = true;
+        }
+      },
+      tock: function (time_, delta_)
+      {
+      },
+
     });
   }
 

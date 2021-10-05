@@ -23,7 +23,9 @@ class XRTWorkspace
     this.raycaster = null;
     this.grabbed_el_ = null;
 
-    this.rig = new XRTRig();;
+    this.rig = new XRTRig();
+
+    this.gl_ = undefined;
   }
 
   init(self_)
@@ -38,6 +40,8 @@ class XRTWorkspace
 
     let insec_el = this.rig.get_intersection();
     this.el_.appendChild(insec_el);
+
+    this.gl_ = document.querySelector('a-scene').renderer.getContext();
   }
 
   tick(self_, time_, delta_)
@@ -57,6 +61,11 @@ class XRTWorkspace
   tock(self_, time_, delta_)
   {
     this.input_.tock();
+  }
+
+  get_context()
+  {
+    return this.gl_;
   }
 
   key_to_cmd_(pressed_key_)
@@ -113,7 +122,7 @@ class XRTWorkspace
   register()
   {
     this.input_.init(this);
-    let self_ws = this; // FIXME
+    let self_ = this; // FIXME
 
     AFRAME.registerComponent('workspace', {
       schema: {
@@ -129,19 +138,19 @@ class XRTWorkspace
       },
       init: function ()
       {
-        self_ws.init(self_ws);
+        self_.init(this);
 
-        this.el.addEventListener('raycaster-intersected', e_ => { self_ws.raycaster = e_.detail.el; console.log('raycaster intersected'); });
-        this.el.addEventListener('raycaster-intersected-cleared', e_ => { self_ws.raycaster = null; console.log('raycaster intersected cleared');});
+        this.el.addEventListener('raycaster-intersected', e_ => { self_.raycaster = e_.detail.el; console.log('raycaster intersected'); });
+        this.el.addEventListener('raycaster-intersected-cleared', e_ => { self_.raycaster = null; console.log('raycaster intersected cleared');});
       },
       update: function() { },
       tick: function (time_, delta_)
       {
-        self_ws.tick(this, time_, delta_);
-        self_ws.tock(this, time_, delta_);
+        self_.tick(this, time_, delta_);
+        self_.tock(this, time_, delta_);
       },
-      tock: function (time_, delta_) { self_ws.tock(this, time_, delta_); },
-      remove: function () { self_ws.input.finish(); },
+      tock: function (time_, delta_) { self_.tock(this, time_, delta_); },
+      remove: function () { self_.input.finish(); },
       pause: function() {},
       play: function() {}
     });
